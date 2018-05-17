@@ -429,6 +429,29 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Get last transaction initiated"]);
     });
 }
+-(void)initiateRecovery:(NSString *)posRefId transactionType:(SPITransactionType) txType completion:(SPICompletionTxResult)completion{
+    
+    if (self.state.status == SPIStatusUnpaired) {
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:false message:@"Not Paired"]);
+    }
+    
+    @synchronized(self){
+        if (self.state.flow != SPIFlowIdle){
+            completion([[SPIInitiateTxResult alloc] initWithTxResult:false message:@"Not Idle"]);
+        }
+        self.state.flow = SPIFlowTransaction;
+        
+        SPIGetLastTransactionRequest *gtlRequest = [[SPIGetLastTransactionRequest alloc] init];
+        SPIMessage *gltRequestMsg = [gtlRequest toMessage];
+        self.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId type:txType amountCents:0 message:gltRequestMsg msg:@"Waiting for EFTPOS connection to attempt recovery."];
+        if ([self send:gltRequestMsg]){
+            [self.state.txFlowState sent:@"Asked EFTPOS to recover state."];
+        }
+    }
+    [self.delegate spi:self transactionFlowStateChanged:self.state];
+    completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Recovery Initiated"]);
+    
+}
 
 - (void)canceltransactionMonitoringTimer {
     [self.transactionMonitoringTimer cancel];

@@ -177,6 +177,17 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
 - (void)initiateGetLastTxWithCompletion:(SPICompletionTxResult)completion;
 
 /**
+* This is useful to recover from your POS crashing in the middle of a transaction.
+* When you restart your POS, if you had saved enough state, you can call this method to recover the client library state.
+* You need to have the posRefId that you passed in with the original transaction, and the transaction type.
+* This method will return immediately whether recovery has started or not.
+* If recovery has started, you need to bring up the transaction modal to your user a be listening to TxFlowStateChanged.
+*
+* @param posRefId     The is that you had assigned to the transaction that you are trying to recover.
+* @param txType       The transaction type.
+*/
+-(void)initiateRecovery:(NSString *)posRefId transactionType:(SPITransactionType) txType completion:(SPICompletionTxResult)completion;
+/**
  * Attempts to conclude whether a gltResponse matches an expected transaction and returns the outcome.
  * If Success/Failed is returned, it means that the GTL response did match, and that transaction was successful/failed.
  * If Unknown is returned, it means that the gltResponse does not match the expected transaction.
