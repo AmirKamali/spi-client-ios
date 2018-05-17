@@ -163,6 +163,10 @@
     return [[NSDateFormatter dateNoTimeZoneFormatter] dateFromString:bankDateTimeString];
 }
 
+-(BOOL) isStillInProgress:(NSString *) posRefId{
+    return ([self wasOperationInProgressError] && [[self getPosRefId] isEqualToString:posRefId]);
+}
+
 - (SPIMessageSuccessState)successState {
     return self.message.successState;
 }

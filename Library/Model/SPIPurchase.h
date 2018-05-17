@@ -74,6 +74,8 @@
 
 - (NSString *)getRRN;
 
+-(BOOL)isStillInProgress:(NSString *) posRefId;
+
 - (NSString *)getResponseValue:(NSString *)attribute;
 
 - (void)copyMerchantReceiptToCustomerReceipt;
