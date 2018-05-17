@@ -78,6 +78,11 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
 - (BOOL)start;
 
 /**
+ * returns the SDK version
+ */
+- (NSString *)getVersion;
+
+/**
  * Set the pairing secrets encKey and hmacKey
  *
  * @param encKey String

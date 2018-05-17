@@ -132,7 +132,9 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         return YES;
     }
 }
-
+- (NSString *)getVersion{
+    return [[NSBundle bundleWithIdentifier:@"com.assemblypayments.SPIClient-iOS"] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+}
 - (void)setSecretEncKey:(NSString *)encKey hmacKey:(NSString *)hmacKey {
     self.secrets = [[SPISecrets alloc] initWithEncKey:encKey hmacKey:hmacKey];
 }
