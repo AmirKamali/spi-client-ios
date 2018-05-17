@@ -64,6 +64,8 @@
 
 - (NSString *)getTxType;
 
+- (NSString *)getPosRefId;
+
 - (NSString *)getSchemeName;
 
 - (NSInteger)getAmount;

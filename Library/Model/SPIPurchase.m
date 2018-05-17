@@ -124,6 +124,10 @@
     return [self.message getDataStringValue:@"transaction_type"];
 }
 
+- (NSString *)getPosRefId{
+    return [self.message getDataStringValue:@"pos_ref_id"];
+}
+
 - (NSString *)getSchemeName {
     return [self.message getDataStringValue:@"scheme_name"];
 }
