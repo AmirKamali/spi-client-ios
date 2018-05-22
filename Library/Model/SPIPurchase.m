@@ -69,6 +69,23 @@
 - (NSString *)hostResponseText {
     return [self.message getDataStringValue:@"host_response_text"];
 }
+- (NSInteger)getPurchaseAmount{
+    return [self.message getDataIntegerValue:@"purchase_amount"];
+}
+- (NSInteger)getTipAmount{
+    return [self.message getDataIntegerValue:@"tip_amount"];
+}
+- (NSInteger)getCashoutAmount{
+    return [self.message getDataIntegerValue:@"cash_amount"];
+}
+
+- (NSInteger)getBankNonCashAmount{
+    return [self.message getDataIntegerValue:@"bank_noncash_amount"];
+}
+
+- (NSInteger)getBankCashAmount{
+    return [self.message getDataIntegerValue:@"bank_cash_amount"];
+}
 
 @end
 

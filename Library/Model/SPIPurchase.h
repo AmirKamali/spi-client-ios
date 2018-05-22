@@ -33,11 +33,22 @@
 
 - (NSString *)getCustomerReceipt;
 
+- (NSInteger)getPurchaseAmount;
+
+- (NSInteger)getTipAmount;
+
+- (NSInteger)getCashoutAmount;
+
+- (NSInteger)getBankNonCashAmount;
+
+- (NSInteger)getBankCashAmount;
+
 - (NSString *)getResponseText;
 
 - (NSString *)getResponseValueWithAttribute:(NSString *)attribute;
 
 - (NSString *)hostResponseText;
+
 
 @end
 

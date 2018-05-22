@@ -7,11 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-
 #import "SPISecrets.h"
 
-// Events statically declares the various event names in messages.
 
+// Events statically declares the various event names in messages.
 extern NSString * const SPIPairRequestKey;
 extern NSString * const SPIKeyRequestKey;
 extern NSString * const SPIKeyResponseKey;
@@ -46,6 +45,12 @@ extern NSString * const SPIInvalidMessageId;
 extern NSString * const SPIInvalidHmacSignature;
 
 extern NSString * const SPIEventError;
+
+extern NSString * const SPIPayAtTableGetTableConfig; // incoming. When eftpos wants to ask us for P@T configuration.
+extern NSString * const SPIPayAtTableSetTableConfig; // outgoing. When we want to instruct eftpos with the P@T configuration.
+extern NSString * const SPIPayAtTableGetBillDetails; // incoming. When eftpos wants to aretrieve the bill for a table.
+extern NSString * const SPIPayAtTableBillDetails;    // outgoing. We reply with this when eftpos requests to us get_bill_details.
+extern NSString * const SPIPayAtTableBillPayment;    // incoming. When the eftpos advices
 
 typedef NS_ENUM (NSInteger, SPIMessageSuccessState) {
     SPIMessageSuccessStateUnknown,

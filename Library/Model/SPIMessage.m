@@ -47,6 +47,12 @@ NSString * const SPIInvalidMessageId     = @"_";
 NSString * const SPIInvalidHmacSignature = @"_INVALID_SIGNATURE_";
 NSString * const SPIEventError           = @"error";
 
+NSString * const SPIPayAtTableGetTableConfig = @"get_table_config"; // incoming. When eftpos wants to ask us for P@T configuration.
+NSString * const SPIPayAtTableSetTableConfig = @"set_table_config"; // outgoing. When we want to instruct eftpos with the P@T configuration.
+NSString * const SPIPayAtTableGetBillDetails = @"get_bill_details"; // incoming. When eftpos wants to aretrieve the bill for a table.
+NSString * const SPIPayAtTableBillDetails = @"bill_details";        // outgoing. We reply with this when eftpos requests to us get_bill_details.
+NSString * const SPIPayAtTableBillPayment = @"bill_payment";        // incoming. When the eftpos advices
+
 @implementation SPIMessageStamp
 
 - (instancetype)initWithPosId:(NSString *)posId
