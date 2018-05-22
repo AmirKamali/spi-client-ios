@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "SPIPurchase.h"
-#import "SPISettleRequest.h"
+#import "SPISettlement.h"
 #import "SPIConnection.h"
 #import "SPIModels.h"
 
@@ -169,6 +169,7 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  */
 - (void)initiateSettleTx:(NSString *)pid completion:(SPICompletionTxResult)completion;
 
+- (void)initiateSettlementEnquiry:(NSString *)posRefId completion:(SPICompletionTxResult)completion;
 /**
  * Initiates a get last transaction operation.
  * Use this when you want to retrieve the most recent transaction that was processed by the EFTPOS.

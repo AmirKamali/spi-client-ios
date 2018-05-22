@@ -48,6 +48,8 @@ NSString * const SPIMotoPurchaseResponseKey = @"moto_purchase_response";
 
 NSString * const SPISettleRequestKey  = @"settle";
 NSString * const SPISettleResponseKey = @"settle_response";
+NSString * const SPISettlementEnquiryRequestKey = @"settlement_enquiry";
+NSString * const SPISettlementEnquiryResponseKey = @"settlement_enquiry_response";
 
 NSString * const SPIKeyRollRequestKey  = @"request_use_next_keys";
 NSString * const SPIKeyRollResponseKey = @"response_use_next_keys";

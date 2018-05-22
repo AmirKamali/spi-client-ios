@@ -20,7 +20,7 @@
 #import "SPIPurchase.h"
 #import "SPIKeyRollingHelper.h"
 #import "SPIRequestIdHelper.h"
-#import "SPISettleRequest.h"
+#import "SPISettlement.h"
 #import "NSString+Util.h"
 #import "SPILogger.h"
 #import "NSObject+Util.h"
@@ -402,7 +402,28 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Settle initiated"]);
     });
 }
+- (void)initiateSettlementEnquiry:(NSString *)posRefId completion:(SPICompletionTxResult)completion {
+    if (_state.status == SPIStatusUnpaired){
+         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not Paired"]);
+    }
+    __weak __typeof(& *self) weakSelf = self;
+    
+    @synchronized(self){
+        if (_state.flow != SPIFlowIdle) {
+         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not Idle"]);
+        }
+      
+        SPIMessage *stlEnqMsg = [[[SPISettlementEnquiryRequest alloc] initWithRequestId:[SPIRequestIdHelper idForString:@"stlenq"]] toMessage];
+        _state.flow = SPIFlowTransaction;
+        _state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId type:SPITransactionTypeSettleEnquiry amountCents:0 message:stlEnqMsg msg:@"Waiting for EFTPOS connection to make a settlement enquiry"];
+        if ([self send:stlEnqMsg]){
+            [_state.txFlowState sent:@"Asked EFTPOS to make a settlement enquiry."];
+        }
+    }
+    [weakSelf.delegate spi:self transactionFlowStateChanged:weakSelf.state.copy];
 
+    completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Settle Initiated"]);
+}
 - (void)initiateGetLastTxWithCompletion:(SPICompletionTxResult)completion {
     __weak __typeof(& *self) weakSelf = self;
     
