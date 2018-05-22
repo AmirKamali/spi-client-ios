@@ -103,7 +103,7 @@
     //        data.Add(new JProperty("error_detail", Result.ToString()));
     //    }
     //    return new Message(messageId, Events.PayAtTableBillDetails, data, true);
-    SPIMessage *message = [[SPIMessage alloc] initWithMessageId:messageId eventName:SPIPayAtTableBillDetails data:data needsEncryption:true];
+    SPIMessage *message = [[SPIMessage alloc] initWithMessageId:messageId eventName:SPIPayAtTableBillDetailsKey data:data needsEncryption:true];
     return  message;
 }
 @end
@@ -127,8 +127,8 @@
 @end
 @implementation SPIBillPayment
 SPIMessage* _incomingAdvice;
-- (id)init:(SPIMessage *)m{
-    _incomingAdvice = m;
+- (instancetype)initWithMessage:(SPIMessage *)message{
+    _incomingAdvice = message;
     _billId = [_incomingAdvice getDataStringValue:@"bill_id"];
     _tableId = [_incomingAdvice getDataStringValue:@"table_id"];
     _operatorId = [_incomingAdvice getDataStringValue:@"operator_id"];
@@ -141,10 +141,10 @@ SPIMessage* _incomingAdvice;
     {
         _paymentType = PaymentTypeCard;
     }
-    NSDictionary<NSString *,NSObject *> *data = (NSDictionary *)[m.data valueForKey:@"payment_details"];
+    NSDictionary<NSString *,NSObject *> *data = (NSDictionary *)[message.data valueForKey:@"payment_details"];
     
     // this is when we ply the sub object "payment_details" into a purchase response for convenience.
-    SPIMessage *purchaseMsg = [[SPIMessage alloc] initWithMessageId:m.mid eventName:@"payment_details" data:data needsEncryption:false];
+    SPIMessage *purchaseMsg = [[SPIMessage alloc] initWithMessageId:message.mid eventName:@"payment_details" data:data needsEncryption:false];
     
     _purchaseResponse = [[SPIPurchaseResponse alloc] initWithMessage:purchaseMsg];
     
@@ -167,14 +167,14 @@ SPIMessage* _incomingAdvice;
     [data setValue:[NSNumber numberWithBool:_labelOperatorId] forKey:@"operator_id_label"];
     [data setValue:[NSNumber numberWithBool:_labelTableId] forKey:@"table_id_label"];
     [data setValue:_allowedOperatorIds forKey:@"operator_id_list"];
-    SPIMessage *message = [[SPIMessage alloc] initWithMessageId:messageId eventName:SPIPayAtTableSetTableConfig data:data needsEncryption:true];
+    SPIMessage *message = [[SPIMessage alloc] initWithMessageId:messageId eventName:SPIPayAtTableSetTableConfigKey data:data needsEncryption:true];
     return message;
 }
 + (SPIMessage *)featureDisableMessage:(NSString *)messageId{
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     [data setValue:@false forKey:@"pay_at_table_enabled"];
     
-    SPIMessage *message = [[SPIMessage alloc] initWithMessageId:messageId eventName:SPIPayAtTableSetTableConfig data:data needsEncryption:true];
+    SPIMessage *message = [[SPIMessage alloc] initWithMessageId:messageId eventName:SPIPayAtTableSetTableConfigKey data:data needsEncryption:true];
     return message;
 }
 @end

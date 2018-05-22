@@ -35,6 +35,15 @@ extern NSString * const SPISignatureRequiredKey;
 extern NSString * const SPISignatureDeclinedKey;
 extern NSString * const SPISignatureAcceptedKey;
 
+extern NSString * const SPIAuthCodeRequiredKey;
+extern NSString * const SPIAuthCodeAdviceKey;
+
+extern NSString * const SPICashoutOnlyRequestKey;
+extern NSString * const SPICashoutOnlyResponseKey;
+
+extern NSString * const SPIMotoPurchaseRequestKey;
+extern NSString * const SPIMotoPurchaseResponseKey;
+
 extern NSString * const SPISettleRequestKey;
 extern NSString * const SPISettleResponseKey;
 
@@ -46,11 +55,11 @@ extern NSString * const SPIInvalidHmacSignature;
 
 extern NSString * const SPIEventError;
 
-extern NSString * const SPIPayAtTableGetTableConfig; // incoming. When eftpos wants to ask us for P@T configuration.
-extern NSString * const SPIPayAtTableSetTableConfig; // outgoing. When we want to instruct eftpos with the P@T configuration.
-extern NSString * const SPIPayAtTableGetBillDetails; // incoming. When eftpos wants to aretrieve the bill for a table.
-extern NSString * const SPIPayAtTableBillDetails;    // outgoing. We reply with this when eftpos requests to us get_bill_details.
-extern NSString * const SPIPayAtTableBillPayment;    // incoming. When the eftpos advices
+extern NSString * const SPIPayAtTableGetTableConfigKey; // incoming. When eftpos wants to ask us for P@T configuration.
+extern NSString * const SPIPayAtTableSetTableConfigKey; // outgoing. When we want to instruct eftpos with the P@T configuration.
+extern NSString * const SPIPayAtTableGetBillDetailsKey; // incoming. When eftpos wants to aretrieve the bill for a table.
+extern NSString * const SPIPayAtTableBillDetailsKey;    // outgoing. We reply with this when eftpos requests to us get_bill_details.
+extern NSString * const SPIPayAtTableBillPaymentKey;    // incoming. When the eftpos advices
 
 typedef NS_ENUM (NSInteger, SPIMessageSuccessState) {
     SPIMessageSuccessStateUnknown,

@@ -65,7 +65,7 @@ typedef NS_ENUM (NSUInteger, SPIPaymentType) {
 @end
 
 @interface SPIBillPayment:NSObject
--init:(SPIMessage*)m;
+- (instancetype)initWithMessage:(SPIMessage *)message;
 @property (nonatomic, retain) NSString *billId;
 @property (nonatomic, retain) NSString *tableId;
 @property (nonatomic, retain) NSString *operatorId;

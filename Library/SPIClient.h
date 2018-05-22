@@ -205,3 +205,9 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
                           posRefId:(NSString *)posRefId;
 
 @end
+@interface SpiConfig:NSObject
+@property (nonatomic) BOOL promptForCustomerCopyOnEftpos;
+@property (nonatomic) BOOL signatureFlowOnEftpos;
+-(void)addReceiptConfig:(NSMutableDictionary*) data;
+
+@end

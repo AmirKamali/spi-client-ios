@@ -37,6 +37,15 @@ NSString * const SPISignatureRequiredKey = @"signature_required";
 NSString * const SPISignatureDeclinedKey = @"signature_decline";
 NSString * const SPISignatureAcceptedKey = @"signature_accept";
 
+NSString * const SPIAuthCodeRequiredKey = @"authorisation_code_required";
+NSString * const SPIAuthCodeAdviceKey = @"authorisation_code_advice";
+
+NSString * const SPICashoutOnlyRequestKey = @"cash";
+NSString * const SPICashoutOnlyResponseKey = @"cash_response";
+
+NSString * const SPIMotoPurchaseRequestKey = @"moto_purchase";
+NSString * const SPIMotoPurchaseResponseKey = @"moto_purchase_response";
+
 NSString * const SPISettleRequestKey  = @"settle";
 NSString * const SPISettleResponseKey = @"settle_response";
 
@@ -47,11 +56,11 @@ NSString * const SPIInvalidMessageId     = @"_";
 NSString * const SPIInvalidHmacSignature = @"_INVALID_SIGNATURE_";
 NSString * const SPIEventError           = @"error";
 
-NSString * const SPIPayAtTableGetTableConfig = @"get_table_config"; // incoming. When eftpos wants to ask us for P@T configuration.
-NSString * const SPIPayAtTableSetTableConfig = @"set_table_config"; // outgoing. When we want to instruct eftpos with the P@T configuration.
-NSString * const SPIPayAtTableGetBillDetails = @"get_bill_details"; // incoming. When eftpos wants to aretrieve the bill for a table.
-NSString * const SPIPayAtTableBillDetails = @"bill_details";        // outgoing. We reply with this when eftpos requests to us get_bill_details.
-NSString * const SPIPayAtTableBillPayment = @"bill_payment";        // incoming. When the eftpos advices
+NSString * const SPIPayAtTableGetTableConfigKey = @"get_table_config"; // incoming. When eftpos wants to ask us for P@T configuration.
+NSString * const SPIPayAtTableSetTableConfigKey = @"set_table_config"; // outgoing. When we want to instruct eftpos with the P@T configuration.
+NSString * const SPIPayAtTableGetBillDetailsKey = @"get_bill_details"; // incoming. When eftpos wants to aretrieve the bill for a table.
+NSString * const SPIPayAtTableBillDetailsKey = @"bill_details";        // outgoing. We reply with this when eftpos requests to us get_bill_details.
+NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incoming. When the eftpos advices
 
 @implementation SPIMessageStamp
 

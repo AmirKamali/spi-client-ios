@@ -8,6 +8,7 @@
 
 #import "SPIPurchase.h"
 #import "SPIMessage.h"
+#import "SPIClient.h"
 #import "SPIRequestIdHelper.h"
 #import "NSDateFormatter+Util.h"
 
@@ -43,7 +44,9 @@
         _message       = message;
         _requestid     = message.mid;
         _schemeName    = [message getDataStringValue:@"scheme_name"];
+        _posRefId      = [message getDataStringValue:@"pos_ref_id"];
         _isSuccess     = message.successState == SPIMessageSuccessStateSuccess;
+        
     }
     
     return self;
@@ -335,4 +338,68 @@
     
 }
 
+@end
+@implementation SPIMotoPurchaseRequest:NSObject
+SpiConfig *config;
+- (id)init:(NSInteger)amountCents posRefId:(NSString *)posRefId{
+    config = [[SpiConfig alloc] init];
+    _purchaseAmount = amountCents;
+    _posRefId = posRefId;
+    return  self;
+}
+- (SPIMessage *)toMessage{
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+    [data setValue:_posRefId forKey:@"pos_ref_id"];
+    [data setValue:[NSNumber numberWithInteger:_purchaseAmount] forKey:@"purchase_amount"];
+    [config addReceiptConfig:data];
+    SPIMessage *message = [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"moto"] eventName:SPIMotoPurchaseRequestKey data:data needsEncryption:true];
+    return message;
+}
+@end
+@implementation SPIMotoPurchaseResponse:NSObject
+- (instancetype)initWithMessage:(SPIMessage *)message{
+    _purchaseResponse = [[SPIPurchaseResponse alloc] initWithMessage:message];
+    _posRefId = _purchaseResponse.posRefId;
+    return self;
+}
+@end
+@implementation SPIPhoneForAuthRequired:NSObject
+NSString *_phoneNumber;
+NSString *_merchantId;
+- (instancetype)initWithMessage:(SPIMessage *)message{
+    _requestId = message.mid;
+    _posRefId = [message getDataStringValue:@"pos_ref_id"];
+    _phoneNumber = [message getDataStringValue:@"auth_centre_phone_number"];
+    _merchantId = [message getDataStringValue:@"merchant_id"];
+    return self;
+}
+- (id)init:(NSString *)posRefId requestId:(NSString *)requestId phoneNumber:(NSString *)phoneNumber merchantId:(NSString *)merchantId{
+    _requestId = requestId;
+    _posRefId = posRefId;
+    _phoneNumber = phoneNumber;
+    _merchantId = merchantId;
+    return self;
+}
+-(NSString *)getPhoneNumber{
+    return _phoneNumber;
+}
+-(NSString *)getMerchantId{
+    return _merchantId;
+}
+
+@end
+@implementation SPIAuthCodeAdvice:NSObject
+- (id)init:(NSString *)posRefId authCode:(NSString *)authCode{
+    _posRefId = posRefId;
+    _authCode = authCode;
+    return self;
+}
+- (SPIMessage *)toMessage{
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+    [data setValue:_posRefId forKey:@"pos_ref_id"];
+    [data setValue:_authCode forKey:@"auth_code"];
+
+    SPIMessage *message = [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"authad"] eventName:SPIAuthCodeAdviceKey data:data needsEncryption:true];
+    return message;
+}
 @end

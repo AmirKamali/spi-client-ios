@@ -25,6 +25,7 @@
 @property (nonatomic, readonly) BOOL               isSuccess;
 @property (nonatomic, readonly, copy) NSString     *requestid;
 @property (nonatomic, readonly, copy) NSString     *schemeName;
+@property (nonatomic,retain) NSString              *posRefId;
 @property (nonatomic, readonly, strong) SPIMessage *message;
 
 - (instancetype)initWithMessage:(SPIMessage *)message;
@@ -141,4 +142,34 @@
 - (instancetype)initWithSignatureRequiredRequestId:(NSString *)signatureRequiredRequestId;
 
 - (SPIMessage *)toMessage;
+@end
+@interface SPIMotoPurchaseRequest:NSObject
+-init:(NSInteger)amountCents posRefId:(NSString *)posRefId;
+
+@property (nonatomic, readonly) NSInteger          purchaseAmount;
+@property (nonatomic, readonly, copy) NSString     *posRefId;
+- (SPIMessage *) toMessage;
+
+@end
+
+@interface SPIMotoPurchaseResponse:NSObject
+- (instancetype)initWithMessage:(SPIMessage *)message;
+@property (nonatomic, readonly, copy) NSString                *posRefId;
+@property (nonatomic, readonly, copy) SPIPurchaseResponse     *purchaseResponse;
+@end
+
+@interface SPIPhoneForAuthRequired:NSObject
+- (instancetype)initWithMessage:(SPIMessage *)message;
+-init:(NSString *)posRefId requestId:(NSString *)requestId phoneNumber:(NSString *)phoneNumber merchantId:(NSString *)merchantId;
+@property (nonatomic, readonly, copy) NSString     *requestId;
+@property (nonatomic, readonly, copy) NSString     *posRefId;
+-(NSString *)getPhoneNumber;
+-(NSString *)getMerchantId;
+@end
+
+@interface SPIAuthCodeAdvice:NSObject
+-init:(NSString *)posRefId authCode:(NSString *)authCode;
+@property (nonatomic, readonly, copy) NSString     *authCode;
+@property (nonatomic, readonly, copy) NSString     *posRefId;
+- (SPIMessage *) toMessage;
 @end

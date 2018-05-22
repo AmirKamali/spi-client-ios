@@ -1229,3 +1229,14 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 }
 
 @end
+@implementation SpiConfig
+-(void)addReceiptConfig:(NSMutableDictionary*) data{
+    if (_promptForCustomerCopyOnEftpos){
+        [data setObject:[NSNumber numberWithBool:_promptForCustomerCopyOnEftpos] forKey:@"prompt_for_customer_copy"];
+    }
+    if (_signatureFlowOnEftpos)
+    {
+        [data setObject:[NSNumber numberWithBool:_signatureFlowOnEftpos] forKey:@"print_for_signature_required_transactions"];
+    }
+}
+@end
