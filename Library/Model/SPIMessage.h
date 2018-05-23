@@ -16,6 +16,7 @@ extern NSString * const SPIKeyRequestKey;
 extern NSString * const SPIKeyResponseKey;
 extern NSString * const SPIKeyCheckKey;
 extern NSString * const SPIPairResponseKey;
+extern NSString * const SPIDropKeysAdviceKey;
 
 extern NSString * const SPILoginRequestKey;
 extern NSString * const SPILoginResponseKey;

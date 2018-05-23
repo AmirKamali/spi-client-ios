@@ -105,3 +105,8 @@
 }
 
 @end
+@implementation SPIDropKeysRequest
+-(SPIMessage *)toMessage{
+    return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"drpkys"] eventName:SPIDropKeysAdviceKey data:nil needsEncryption:true];
+}
+@end

@@ -18,6 +18,7 @@ NSString * const SPIKeyRequestKey   = @"key_request";
 NSString * const SPIKeyResponseKey  = @"key_response";
 NSString * const SPIKeyCheckKey     = @"key_check";
 NSString * const SPIPairResponseKey = @"pair_response";
+NSString * const SPIDropKeysAdviceKey  = @"drop_keys";
 
 NSString * const SPILoginRequestKey  = @"login_request";
 NSString * const SPILoginResponseKey = @"login_response";
