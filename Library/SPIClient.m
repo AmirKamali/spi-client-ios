@@ -39,16 +39,15 @@
 @property (nonatomic, strong) SPIGCDTimer *pingTimer;
 @property (nonatomic, strong) SPIGCDTimer *disconnectIfNeededSourceTimer;
 @property (nonatomic, strong) SPIGCDTimer *transactionMonitoringTimer;
-@property (nonatomic, strong) SPIGCDTimer *tryToReconnectTimer;
+//@property (nonatomic, strong) SPIGCDTimer *tryToReconnectTimer;
 
 @property (nonatomic, strong) SPIMessage *mostRecentPingSent;
+@property (nonatomic) NSTimeInterval mostRecentPingSentTime;
 @property (nonatomic, strong) SPIMessage *mostRecentPongReceived;
 @property (nonatomic, assign) NSInteger  missedPongsCount;
 
-@property (nonatomic, strong) SPILoginResponse     *mostRecentLoginResponse;
+//@property (nonatomic, strong) SPILoginResponse     *mostRecentLoginResponse;
 @property (nonatomic, strong) SPISignatureRequired *mostRecentSignatureRequiredReceived;
-
-@property (nonatomic, assign)  BOOL readyToTransact;
 
 @property (nonatomic, assign)  BOOL started;
 
@@ -59,12 +58,13 @@
 static NSTimeInterval txMonitorCheckFrequency        = 1; // How often do we check on the tx state from our tx monitoring thread
 static NSTimeInterval checkOnTxFrequency             = 20; // How often do we proactively check on the tx status by calling get_last_transaction
 static NSTimeInterval maxWaitForCancelTx             = 10; // How long do we wait for cancel to return before giving up completely.
-static NSTimeInterval tryToReconnectTime             = 5; // How long do we wait before attempting a re-connection
 static NSTimeInterval txServerAdjustmentTimeInterval = -5; // Adjust server time
+
 
 static NSTimeInterval pongTimeout   = 5;  // How long do we wait for a pong to come back
 static NSTimeInterval pingFrequency = 18; // How often we send pings
 static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before disconnecting
+
 
 @implementation SPIClient
 
@@ -74,10 +74,9 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     if (self) {
         _queue = dispatch_queue_create("com.assemblypayments", dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_DEFAULT, 0));
         
-        _pingTimer                     = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.ping"];
         _disconnectIfNeededSourceTimer = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.disconnect"];
         _transactionMonitoringTimer    = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.txMonitor"];
-        _tryToReconnectTimer           = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.tryToReconnect"];
+     //   _tryToReconnectTimer           = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.tryToReconnect"];
         
         _state = [SPIState new];
     }
@@ -93,7 +92,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [_pingTimer cancel];
     [_disconnectIfNeededSourceTimer cancel];
     [_transactionMonitoringTimer cancel];
-    [_tryToReconnectTimer cancel];
+   // [_tryToReconnectTimer cancel];
 }
 
 - (BOOL)start {
@@ -225,17 +224,14 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 }
 
 - (void)pairingCancel {
-    __weak __typeof(& *self) weakSelf = self;
-    
-    dispatch_async(self.queue, ^{
-        NSLog(@"pairingCancel");
-        
-        if (weakSelf.state.flow != SPIFlowPairing || weakSelf.state.pairingFlowState.isFinished) {
-            return;
-        }
-        
-        [weakSelf onPairingFailed:@"Pairing cancelled"];
-    });
+    if (_state.flow != SPIFlowPairing || _state.pairingFlowState.isFinished){
+        return;
+    }
+    if (_state.pairingFlowState.isAwaitingCheckFromPos && !_state.pairingFlowState.isAwaitingCheckFromEftpos){
+        SPIMessage *message = [[[SPIDropKeysRequest alloc] init] toMessage];
+        [self send:message];
+    }
+    [self onPairingFailed];
 }
 
 - (void)unpair {
@@ -589,11 +585,12 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     
     if (pairResponse.isSuccess) {
         if (self.state.pairingFlowState.isAwaitingCheckFromPos) {
+            SPILog(@"Got Pair Confirm from Eftpos, but still waiting for use to confirm from POS.");
             // Still Waiting for User to say yes on POS
             self.state.pairingFlowState.message = [NSString stringWithFormat:@"Confirm that the following Code:\n\n%@\n\n is what the EFTPOS showed", self.state.pairingFlowState.confirmationCode];
             [self.delegate spi:self pairingFlowStateChanged:self.state.copy];
         } else {
-            self.state.pairingFlowState.message = @"Pairing successful";
+            SPILog(@"Got Pair Confirm from Eftpos, and already had confirm from POS. Now just waiting for first pong.");
             [self onPairingSuccess];
         }
         
@@ -601,7 +598,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         // because otherwise within 5 seconds connectiong will be dropped by eftpos.
         [self startPeriodicPing];
     } else {
-        [self onPairingFailed:@"Pairing failed"];
+        [self onPairingFailed];
     }
 }
 
@@ -616,7 +613,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [self.delegate spi:self pairingFlowStateChanged:self.state.copy];
 }
 
-- (void)onPairingFailed:(NSString *)msg {
+- (void)onPairingFailed{
     NSLog(@"onPairingFailed");
     
     self.secrets                 = nil;
@@ -624,9 +621,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [self.connection disconnect];
     
     self.state.status = SPIStatusUnpaired;
-    [self.delegate spi:self statusChanged:self.state.copy];
     
-    self.state.pairingFlowState.message                = msg;
+    self.state.pairingFlowState.message                = @"Pairing Failed";
     self.state.pairingFlowState.isFinished             = YES;
     self.state.pairingFlowState.isSuccessful           = NO;
     self.state.pairingFlowState.isAwaitingCheckFromPos = NO;
@@ -933,39 +929,48 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                 weakSelf.mostRecentPingSent = nil;
                 weakSelf.mostRecentPongReceived = nil;
                 weakSelf.missedPongsCount = 0;
-                weakSelf.mostRecentLoginResponse = nil;
-                weakSelf.readyToTransact = NO;
                 [weakSelf stopPeriodPing];
                 
                 if (weakSelf.state.status != SPIStatusUnpaired) {
                     
                     weakSelf.state.status = SPIStatusPairedConnecting;
-                    [weakSelf.delegate spi:weakSelf statusChanged:weakSelf.state.copy];
-                    
-                    if (weakSelf.state.flow == SPIFlowTransaction) {
-                        // we're in the middle of a transaction, just so you know!
-                        // TH-1D
-                        SPILog(@"Lost connection in the middle of a transaction...");
+                    @synchronized(self){
+                        if (weakSelf.state.flow == SPIFlowTransaction && !weakSelf.state.pairingFlowState.isFinished) {
+                            // we're in the middle of a transaction, just so you know!
+                            // TH-1D
+                            SPILog(@"Lost connection in the middle of a transaction...");
+                        }
                     }
                     
-                    SPILog(@"Will try to reconnect soon...");
+               
                     
-                    [weakSelf.tryToReconnectTimer cancel];
-                    [weakSelf.tryToReconnectTimer afterDelay:tryToReconnectTime repeat:NO block:^(id self) {
-                        SPILog(@"tryToReconnect");
-                        
-                        if (weakSelf.state.status != SPIStatusUnpaired) {
-                            SPILog(@"Try to reconnect now");
+                    
+                    //[weakSelf.delegate spi:weakSelf statusChanged:weakSelf.state.copy];
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        if (weakSelf.connection == nil) {return ;}
+                        SPILog(@"Will try to reconnect soon...");
+                        sleep(5000);
+                        if (weakSelf.state.status != SPIStatusUnpaired){
                             [weakSelf.connection connect];
                         }
-                    }];
+                    });
                     
+
+//                    [weakSelf.tryToReconnectTimer cancel];
+//                    [weakSelf.tryToReconnectTimer afterDelay:tryToReconnectTime repeat:NO block:^(id self) {
+//                        SPILog(@"tryToReconnect");
+//
+//                        if (weakSelf.state.status != SPIStatusUnpaired) {
+//                            SPILog(@"Try to reconnect now");
+//                            [weakSelf.connection connect];
+//                        }
+//                    }];
+
                 } else if (weakSelf.state.flow == SPIFlowPairing) {
                     SPILog(@"Lost connection during pairing.");
-                    
-                    if (!weakSelf.state.pairingFlowState.isFinished) {
-                        [weakSelf onPairingFailed:@"Could not connect to pair. Check network/EFTPOS and try again..."];
-                    }
+                    weakSelf.state.pairingFlowState.message = @"Could not connect to pair. Check network/EFTPOS and try again...";
+                    [weakSelf onPairingFailed];
+                    [self.delegate spi:self pairingFlowStateChanged:self.state.copy];
                 }
                 
                 break;
@@ -981,14 +986,73 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  * so it disconnects.
  */
 - (void)startPeriodicPing {
-    SPILog(@"startPeriodicPing");
-    self.missedPongsCount = 0;
+     __weak __typeof(& *self) weakSelf = self;
+    if (_pingTimer != nil){
+        [_pingTimer cancel];
+        _pingTimer = nil;
+    }
+    _pingTimer = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.ping"];
+
+    [_pingTimer afterDelay:0 repeat:true block:^(id self) {
+        if (! weakSelf.connection.isConnected || weakSelf.secrets == nil){
+            [weakSelf.pingTimer cancel];
+            return ;
+        }
+        [self doPing];
+        sleep(pongTimeout);
+        if (weakSelf.mostRecentPingSent != nil &&
+            (weakSelf.mostRecentPongReceived == nil || weakSelf.mostRecentPongReceived.mid != weakSelf.mostRecentPingSent.mid))
+        {
+            weakSelf.missedPongsCount += 1;
+            SPILog(@"Eftpos didn't reply to my Ping. Missed Count: %i", weakSelf.missedPongsCount/missedPongsToDisconnect);
+            if (weakSelf.missedPongsCount < missedPongsToDisconnect){
+                SPILog(@"Trying another ping...");
+                return;
+            }
+            // This means that we have reached missed pong limit.
+            // We consider this connection as broken.
+            // Let's Disconnect.
+            SPILog(@"Disconnecting...");
+            [weakSelf.connection disconnect];
+            return;
+        }
+        weakSelf.missedPongsCount = 0;
+        sleep(pingFrequency - pongTimeout);
+
+        
+    }];
+
+//                                             {
+//                                                 _missedPongsCount += 1;
+//                                                 _log.Info($"Eftpos didn't reply to my Ping. Missed Count: {_missedPongsCount}/{_missedPongsToDisconnect}. ");
+//
+//                                                 if (_missedPongsCount < _missedPongsToDisconnect)
+//                                                 {
+//                                                     _log.Info("Trying another ping...");
+//                                                     continue;
+//                                                 }
+//
+//                                                 // This means that we have reached missed pong limit.
+//                                                 // We consider this connection as broken.
+//                                                 // Let's Disconnect.
+//                                                 _log.Info("Disconnecting...");
+//                                                 _conn.Disconnect();
+//                                                 break;
+//                                             }
+//                                             _missedPongsCount = 0;
+//                                             Thread.Sleep(_pingFrequency - _pongTimeout);
+//                                         }
+//                                     });
+//    _periodicPingThread.Start();
     
-    // If we were already set up, clean up before restarting.
-    [self stopPeriodPing];
-    
-    //There can be no delay onces started or else will get error!!
-    [self doPing];
+//    SPILog(@"startPeriodicPing");
+//    self.missedPongsCount = 0;
+//
+//    // If we were already set up, clean up before restarting.
+//    [self stopPeriodPing];
+//
+//    //There can be no delay onces started or else will get error!!
+//    [self doPing];
 }
 
 /**
@@ -1040,38 +1104,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     SPIMessage *ping = [SPIPingHelper generatePingRequest];
     self.mostRecentPingSent = ping;
     [self send:ping];
-    
-    [self.disconnectIfNeededSourceTimer afterDelay:pongTimeout repeat:NO block:^(SPIClient *self) {
-        NSLog(@"pingDisconnectIfNeeded");
-        
-        if (self.mostRecentPingSent != nil
-            && (self.mostRecentPongReceived == nil || ![self.mostRecentPongReceived.mid isEqualToString:self.mostRecentPingSent.mid])) {
-            
-            self.missedPongsCount += 1;
-            SPILog(@"EFTPOS didn't reply to my ping. Missed count: %d/%d", self.missedPongsCount, missedPongsToDisconnect);
-            
-            if (self.missedPongsCount < missedPongsToDisconnect) {
-                SPILog(@"Trying another ping...");
-                [self.pingTimer afterDelay:(1) repeat:NO block:^(SPIClient *self) {
-                    [self doPing];
-                }];
-                return;
-            }
-            // This means that we have not received a pong for our most recent ping.
-            // We consider this connection as broken.
-            // Let's disconnect.
-            SPILog(@"Disconnecting...");
-            [self.connection disconnect];
-            
-        } else {
-            self.missedPongsCount = 0;
-            if (self.connection.isConnected && self.secrets != nil) {
-                [self.pingTimer afterDelay:(pingFrequency - pongTimeout) repeat:NO block:^(SPIClient *self) {
-                    [self doPing];
-                }];
-            }
-        }
-    }];
+    self.mostRecentPingSentTime = [NSDate date].timeIntervalSince1970;
 }
 
 /**
@@ -1085,54 +1118,62 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     // We need to maintain this time delta otherwise the server will not accept our messages.
     self.spiMessageStamp.serverTimeDelta = m.serverTimeDelta;
     
-    if (self.mostRecentLoginResponse == nil
-        || [self.mostRecentLoginResponse expiringSoon:self.spiMessageStamp.serverTimeDelta]) {
-        // We have not logged in yet, or login expiring soon.
-        [self login];
+    if (self.mostRecentPongReceived == nil) {
+        // First pong received after a connection, and after the pairing process is fully finalised.
+        if (_state.status != SPIStatusUnpaired)
+        {
+            SPILog(@"First pong of connection and in paired state.");
+            [self onReadyToTransact];
+        }
+        else
+        {
+            SPILog(@"First pong of connection but pairing process not finalised yet.");
+        }
     }
     
     self.mostRecentPongReceived = m;
+    SPILog(@"PongLatency:%@", [NSDate date].timeIntervalSince1970 - _mostRecentPingSentTime);
 }
+//
+///**
+// * Login is a mute thing but is required.
+// */
+//- (void)login {
+//    NSLog(@"login");
+//    SPILoginRequest *lr = [SPILoginRequest new];
+//    [self send:[lr toMessage]];
+//}
 
-/**
- * Login is a mute thing but is required.
- */
-- (void)login {
-    NSLog(@"login");
-    SPILoginRequest *lr = [SPILoginRequest new];
-    [self send:[lr toMessage]];
-}
-
-/**
- * When the server replied to our LoginRequest with a LoginResponse, we take note of it.
- *
- * @param m Message
- */
-- (void)handleLoginResponse:(SPIMessage *)m {
-    NSLog(@"handleLoginResponse");
-    
-    SPILoginResponse *lr = [[SPILoginResponse alloc] initWithMessage:m];
-    
-    if (lr.isSuccess) {
-        self.mostRecentLoginResponse = lr;
-        
-        if (!self.readyToTransact) {
-            // We are finally ready to make transactions.
-            // Let's notify ourselves so we can take some actions.
-            self.readyToTransact = YES;
-            SPILog(@"Logged in successfully. Expires: %@", lr.expires);
-            
-            if (self.state.status != SPIStatusUnpaired) {
-                [self onReadyToTransact];
-            }
-        } else {
-            SPILog(@"I have just refreshed my login. Now Expires: %@", lr.expires);
-        }
-    } else {
-        SPILog(@"Logged in failure.");
-        [self.connection disconnect];
-    }
-}
+///**
+// * When the server replied to our LoginRequest with a LoginResponse, we take note of it.
+// *
+// * @param m Message
+// */
+//- (void)handleLoginResponse:(SPIMessage *)m {
+//    NSLog(@"handleLoginResponse");
+//
+//    SPILoginResponse *lr = [[SPILoginResponse alloc] initWithMessage:m];
+//
+//    if (lr.isSuccess) {
+//        self.mostRecentLoginResponse = lr;
+//
+//        if (!self.readyToTransact) {
+//            // We are finally ready to make transactions.
+//            // Let's notify ourselves so we can take some actions.
+//            self.readyToTransact = YES;
+//            SPILog(@"Logged in successfully. Expires: %@", lr.expires);
+//
+//            if (self.state.status != SPIStatusUnpaired) {
+//                [self onReadyToTransact];
+//            }
+//        } else {
+//            SPILog(@"I have just refreshed my login. Now Expires: %@", lr.expires);
+//        }
+//    } else {
+//        SPILog(@"Logged in failure.");
+//        [self.connection disconnect];
+//    }
+//}
 
 /**
  *
@@ -1192,10 +1233,6 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             
         } else if ([eventName isEqualToString:SPIPairResponseKey]) {
             [weakSelf handlePairResponse:m];
-            
-        } else if ([eventName isEqualToString:SPILoginResponseKey]) {
-            [weakSelf handleLoginResponse:m];
-            
         } else if ([eventName isEqualToString:SPIPurchaseResponseKey]) {
             // includes cancel purchases
             [weakSelf handlePurchaseResponse:m];
