@@ -12,7 +12,7 @@
 @class SPIMessage;
 @class SPIConfig;
 @interface SPIPurchaseRequest : NSObject
-@property (nonatomic, readonly, copy) NSString *purchaseId;
+@property (nonatomic, readonly, copy) NSString *purchaseId DEPRECATED_ATTRIBUTE;
 @property (nonatomic, readonly, copy) NSString *posRefId;
 @property (nonatomic, readonly) NSInteger      amountCents DEPRECATED_ATTRIBUTE;
 @property (nonatomic, readonly) NSInteger      purchaseAmount;
@@ -21,8 +21,8 @@
 @property (nonatomic) BOOL                     promptForCashout;
 @property(nonatomic,retain)  SPIConfig *config;
 
-- (instancetype)initWithPurchaseId:(NSString *)purchaseId
-                       amountCents:(NSInteger)amountCents;
+- (instancetype)initWithAmountCents:(NSInteger)amountCents
+                       posRefId:(NSString *)posRefId;
 - (SPIMessage *)toMessage;
 - (NSString *)amountSummary;
 @end

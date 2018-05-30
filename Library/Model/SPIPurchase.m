@@ -14,12 +14,16 @@
 
 @implementation SPIPurchaseRequest : NSObject
 
-- (instancetype)initWithPurchaseId:(NSString *)purchaseId
-                       amountCents:(NSInteger)amountCents {
+- (instancetype)initWithAmountCents:(NSInteger)amountCents
+                           posRefId:(NSString *)posRefId{
     self = [super init];
     
     if (self) {
-        _purchaseId  = [purchaseId copy];
+        _posRefId  = posRefId;
+        _purchaseAmount = amountCents;
+        
+        // Library Backwards Compatibility
+        _purchaseId = posRefId;
         _amountCents = amountCents;
     }
     
@@ -27,14 +31,19 @@
     
 }
 - (SPIMessage *)toMessage {
-    return [[SPIMessage alloc] initWithMessageId:self.purchaseId
+    NSDictionary *originalData = @{@"purchase_amount":@(self.purchaseAmount),
+                                  @"tip_amount":@(self.tipAmount),
+                                  @"cash_amount":@(self.cashoutAmount),
+                                  @"prompt_for_cashout":@(self.promptForCashout)
+                                  };
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] initWithDictionary:originalData];
+    [_config addReceiptConfig:data];
+    SPIMessage *message = [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"prchs"]
                                        eventName:SPIPurchaseRequestKey
-                                            data:@{@"purchase_amount":@(self.purchaseAmount),
-                                                   @"tip_amount":@(self.tipAmount),
-                                                   @"cash_amount":@(self.cashoutAmount),
-                                                   @"prompt_for_cashout":@(self.promptForCashout)
-                                                   }
+                                            data:data
                                  needsEncryption:true];
+    return message;
+    
 }
 -(NSString *)amountSummary{
     return [NSString stringWithFormat:@"Purchase: %.2f; Tip: %.2f; Cashout: %.2f;",((float)_purchaseAmount/100.0),((float)_tipAmount/100.0),((float)_cashoutAmount/100.0)];

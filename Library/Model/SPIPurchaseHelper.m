@@ -10,10 +10,10 @@
 
 @implementation SPIPurchaseHelper
 +(SPIPurchaseRequest *) createPurchaseRequest:(int)amountCents purchaseId:(NSString *)purchaseId{
-    return [[SPIPurchaseRequest alloc] initWithPurchaseId:purchaseId amountCents:amountCents];
+    return [[SPIPurchaseRequest alloc] initWithAmountCents:amountCents posRefId:purchaseId];
 }
 +(SPIPurchaseRequest *) createPurchaseRequestV2:(NSString *)posRefId purchaseAmount:(int)purchaseAmount tipAmount:(int)tipAmount cashAmount:(int)cashAmount promptForCashout:(BOOL)promptForCashout{
-    SPIPurchaseRequest *request = [[SPIPurchaseRequest alloc] initWithPurchaseId:posRefId amountCents:purchaseAmount];
+    SPIPurchaseRequest *request = [[SPIPurchaseRequest alloc] initWithAmountCents:purchaseAmount posRefId:posRefId];
     request.cashoutAmount = cashAmount;
     request.tipAmount = tipAmount;
     request.promptForCashout = promptForCashout;

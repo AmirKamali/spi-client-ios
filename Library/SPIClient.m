@@ -260,31 +260,28 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 #pragma mark - Transactions
 
 - (void)initiatePurchaseTx:(NSString *)pid amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion {
-    
     SPILog(@"initiatePurchaseTx");
     
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
         return;
-    } else if (self.state.flow != SPIFlowIdle) {
-        completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
-        return;
     }
-    
-    SPIPurchaseRequest *purchase        = [[SPIPurchaseRequest alloc] initWithPurchaseId:pid amountCents:amountCents];
-    purchase.config = _config;
-    SPIMessage         *purchaseMessage = [purchase toMessage];
-    
     __weak __typeof(& *self) weakSelf = self;
     
     dispatch_async(self.queue, ^{
+        if (self.state.flow != SPIFlowIdle) {
+            completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+            return;
+        }
+        SPIPurchaseRequest *purchase        = [[SPIPurchaseRequest alloc] initWithAmountCents:amountCents posRefId:pid];
+        purchase.config = weakSelf.config;
+        SPIMessage         *purchaseMessage = [purchase toMessage];
         weakSelf.state.flow = SPIFlowTransaction;
         weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:pid
                                                                              type:SPITransactionTypePurchase
                                                                       amountCents:amountCents
                                                                           message:purchaseMessage
                                                                               msg:[NSString stringWithFormat:@"Waiting for EFTPOS connection to make payment request for $%.2f", amountCents / 100.0]];
-        
         if ([weakSelf send:purchaseMessage]) {
             [weakSelf.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS to accept payment for $%.2f", amountCents / 100.0]];
         }
