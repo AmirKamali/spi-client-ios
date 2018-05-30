@@ -82,7 +82,7 @@
     self = [super init];
     
     if (self) {
-        _isSuccess = [message getDataBoolValue:@"success"];
+        _isSuccess = [message getDataBoolValue:@"success" defaultIfNotFound:false];
     }
     
     return self;

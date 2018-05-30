@@ -130,7 +130,7 @@ typedef NS_ENUM (NSInteger, SPIMessageSuccessState) {
 
 - (NSInteger)getDataIntegerValue:(NSString *)attribute;
 
-- (BOOL)getDataBoolValue:(NSString *)attribute;
+- (BOOL)getDataBoolValue:(NSString *)attribute defaultIfNotFound:(BOOL)defaultIfNotFound;
 
 - (NSDictionary *)getDataDictionaryValue:(NSString *)attribute;
 

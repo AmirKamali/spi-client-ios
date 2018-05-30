@@ -10,16 +10,23 @@
 #import "SPIMessage.h"
 
 @class SPIMessage;
-
+@class SPIConfig;
 @interface SPIPurchaseRequest : NSObject
 @property (nonatomic, readonly, copy) NSString *purchaseId;
-@property (nonatomic, readonly) NSInteger      amountCents;
+@property (nonatomic, readonly, copy) NSString *posRefId;
+@property (nonatomic, readonly) NSInteger      amountCents DEPRECATED_ATTRIBUTE;
+@property (nonatomic, readonly) NSInteger      purchaseAmount;
+@property (nonatomic) NSInteger                tipAmount;
+@property (nonatomic) NSInteger                cashoutAmount;
+@property (nonatomic) BOOL                     promptForCashout;
+@property(nonatomic,retain)  SPIConfig *config;
 
 - (instancetype)initWithPurchaseId:(NSString *)purchaseId
                        amountCents:(NSInteger)amountCents;
-
 - (SPIMessage *)toMessage;
+- (NSString *)amountSummary;
 @end
+
 
 @interface SPIPurchaseResponse : NSObject
 @property (nonatomic, readonly) BOOL               isSuccess;
@@ -95,10 +102,12 @@
 @end
 
 @interface SPIRefundRequest : NSObject
-@property (nonatomic, readonly, copy) NSString *refundId;
+@property (nonatomic, readonly, copy) NSString *refundId DEPRECATED_ATTRIBUTE;
 @property (nonatomic, readonly) NSInteger      amountCents;
+@property (nonatomic, readonly, copy) NSString *posRefId;
+@property (nonatomic, retain) SPIConfig *config;
 
-- (instancetype)initWithRefundId:(NSString *)refundId amountCents:(NSInteger)amountCents;
+- (instancetype)initWithPosRefId:(NSString *)posRefId amountCents:(NSInteger)amountCents;
 
 - (SPIMessage *)toMessage;
 @end
@@ -148,6 +157,7 @@
 
 @property (nonatomic, readonly) NSInteger          purchaseAmount;
 @property (nonatomic, readonly, copy) NSString     *posRefId;
+@property(nonatomic,retain)  SPIConfig *config;
 - (SPIMessage *) toMessage;
 
 @end

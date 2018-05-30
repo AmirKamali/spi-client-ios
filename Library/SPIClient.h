@@ -14,7 +14,12 @@
 #import "SPIModels.h"
 
 @class SPIClient;
+@interface SPIConfig:NSObject
+@property (nonatomic) BOOL promptForCustomerCopyOnEftpos;
+@property (nonatomic) BOOL signatureFlowOnEftpos;
+-(void)addReceiptConfig:(NSMutableDictionary*) data;
 
+@end
 typedef void (^SPICompletionTxResult)(SPIInitiateTxResult *result);
 
 /**
@@ -70,6 +75,7 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
 
 @property (nonatomic, weak) id <SPIDelegate> delegate;
 
+@property(nonatomic,readonly)  SPIConfig *config;;
 /**
  * If you provide secrets, it will start in PairedConnecting status; Otherwise it will start in Unpaired status.
  *
@@ -206,9 +212,4 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
                           posRefId:(NSString *)posRefId;
 
 @end
-@interface SpiConfig:NSObject
-@property (nonatomic) BOOL promptForCustomerCopyOnEftpos;
-@property (nonatomic) BOOL signatureFlowOnEftpos;
--(void)addReceiptConfig:(NSMutableDictionary*) data;
 
-@end

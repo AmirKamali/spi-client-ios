@@ -101,6 +101,10 @@
 		279BB737205B581E005ADECB /* JKBigInteger.m in Sources */ = {isa = PBXBuildFile; fileRef = 279BB72C205B581E005ADECB /* JKBigInteger.m */; };
 		27BEE9842058F9C400E74E66 /* SPIClient_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27BEE97A2058F9C400E74E66 /* SPIClient_iOS.framework */; };
 		27BEE9892058F9C400E74E66 /* SPIClient_iOSTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BEE9882058F9C400E74E66 /* SPIClient_iOSTests.m */; };
+		290A3C0120BEEF59006FD523 /* SPIPurchaseHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 290A3BFF20BEEF59006FD523 /* SPIPurchaseHelper.h */; };
+		290A3C0220BEEF59006FD523 /* SPIPurchaseHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 290A3C0020BEEF59006FD523 /* SPIPurchaseHelper.m */; };
+		29534F5B20BD991F0048C0E0 /* SPICashout.h in Headers */ = {isa = PBXBuildFile; fileRef = 29534F5920BD991F0048C0E0 /* SPICashout.h */; };
+		29534F5C20BD991F0048C0E0 /* SPICashout.m in Sources */ = {isa = PBXBuildFile; fileRef = 29534F5A20BD991F0048C0E0 /* SPICashout.m */; };
 		2986B1C520B117EF0044857A /* SPIPayAtTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 2986B1C320B117EF0044857A /* SPIPayAtTable.h */; };
 		2986B1C620B117EF0044857A /* SPIPayAtTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 2986B1C420B117EF0044857A /* SPIPayAtTable.m */; };
 		374E391C9434FCEFB65A705F /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34C6A04AE4CE4C33D490562D /* libPods-Tests.a */; };
@@ -190,6 +194,10 @@
 		27BEE9832058F9C400E74E66 /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		27BEE9882058F9C400E74E66 /* SPIClient_iOSTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIClient_iOSTests.m; sourceTree = "<group>"; };
 		27BEE98A2058F9C400E74E66 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		290A3BFF20BEEF59006FD523 /* SPIPurchaseHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIPurchaseHelper.h; sourceTree = "<group>"; };
+		290A3C0020BEEF59006FD523 /* SPIPurchaseHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIPurchaseHelper.m; sourceTree = "<group>"; };
+		29534F5920BD991F0048C0E0 /* SPICashout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPICashout.h; sourceTree = "<group>"; };
+		29534F5A20BD991F0048C0E0 /* SPICashout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPICashout.m; sourceTree = "<group>"; };
 		2986B1C320B117EF0044857A /* SPIPayAtTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIPayAtTable.h; sourceTree = "<group>"; };
 		2986B1C420B117EF0044857A /* SPIPayAtTable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIPayAtTable.m; sourceTree = "<group>"; };
 		34C6A04AE4CE4C33D490562D /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -257,10 +265,14 @@
 				2986B1C420B117EF0044857A /* SPIPayAtTable.m */,
 				273E9AF3205A30F90006ED5C /* SPIPurchase.h */,
 				273E9AFA205A30F90006ED5C /* SPIPurchase.m */,
+				290A3BFF20BEEF59006FD523 /* SPIPurchaseHelper.h */,
+				290A3C0020BEEF59006FD523 /* SPIPurchaseHelper.m */,
 				273E9AF5205A30F90006ED5C /* SPISecrets.h */,
 				273E9AFC205A30F90006ED5C /* SPISecrets.m */,
 				273E9AEE205A30F90006ED5C /* SPISettlement.h */,
 				273E9AF7205A30F90006ED5C /* SPISettlement.m */,
+				29534F5920BD991F0048C0E0 /* SPICashout.h */,
+				29534F5A20BD991F0048C0E0 /* SPICashout.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -437,6 +449,7 @@
 				279BB734205B581E005ADECB /* tommath.h in Headers */,
 				279BB735205B581E005ADECB /* JKBigDecimal.h in Headers */,
 				279BB72D205B581E005ADECB /* JKBigInteger.h in Headers */,
+				29534F5B20BD991F0048C0E0 /* SPICashout.h in Headers */,
 				273E9B6A205A34BF0006ED5C /* NSString+Crypto.h in Headers */,
 				273E9AFE205A30F90006ED5C /* SPISettlement.h in Headers */,
 				273E9B12205A30F90006ED5C /* SPIMessage.h in Headers */,
@@ -463,6 +476,7 @@
 				273E9B69205A34BF0006ED5C /* NSObject+Util.h in Headers */,
 				273E9B26205A31030006ED5C /* SPIPingHelper.h in Headers */,
 				273E9B6C205A379D0006ED5C /* SPIClient_iOS.h in Headers */,
+				290A3C0120BEEF59006FD523 /* SPIPurchaseHelper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -607,6 +621,7 @@
 			files = (
 				279BB731205B581E005ADECB /* tommath.c in Sources */,
 				273E9B2E205A310A0006ED5C /* SPILogger.m in Sources */,
+				29534F5C20BD991F0048C0E0 /* SPICashout.m in Sources */,
 				273E9AB4205A2FDE0006ED5C /* SPIModels.m in Sources */,
 				273E9B5E205A34BF0006ED5C /* NSString+Crypto.m in Sources */,
 				273E9B00205A30F90006ED5C /* SPILogin.m in Sources */,
@@ -620,6 +635,7 @@
 				2986B1C620B117EF0044857A /* SPIPayAtTable.m in Sources */,
 				273E9AB2205A2FDE0006ED5C /* SPIClient.m in Sources */,
 				273E9B67205A34BF0006ED5C /* NSDate+Util.m in Sources */,
+				290A3C0220BEEF59006FD523 /* SPIPurchaseHelper.m in Sources */,
 				273E9B22205A31030006ED5C /* SPIPingHelper.m in Sources */,
 				273E9B20205A31030006ED5C /* SPIRequestIdHelper.m in Sources */,
 				273E9B0D205A30F90006ED5C /* SPIKeyRollingHelper.m in Sources */,

@@ -25,7 +25,8 @@
 #import "SPILogger.h"
 #import "NSObject+Util.h"
 #import "SPIGCDTimer.h"
-
+#import "SPICashout.h"
+#import "SPIPurchaseHelper.h"
 @interface SPIClient () <SPIConnectionDelegate>
 
 // The current status of this SPI instance. Unpaired, PairedConnecting or PairedConnected.
@@ -76,7 +77,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         
         _disconnectIfNeededSourceTimer = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.disconnect"];
         _transactionMonitoringTimer    = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.txMonitor"];
-     //   _tryToReconnectTimer           = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.tryToReconnect"];
+        //   _tryToReconnectTimer           = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.tryToReconnect"];
         
         _state = [SPIState new];
     }
@@ -92,7 +93,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [_pingTimer cancel];
     [_disconnectIfNeededSourceTimer cancel];
     [_transactionMonitoringTimer cancel];
-   // [_tryToReconnectTimer cancel];
+    // [_tryToReconnectTimer cancel];
 }
 
 - (BOOL)start {
@@ -271,6 +272,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     }
     
     SPIPurchaseRequest *purchase        = [[SPIPurchaseRequest alloc] initWithPurchaseId:pid amountCents:amountCents];
+    purchase.config = _config;
     SPIMessage         *purchaseMessage = [purchase toMessage];
     
     __weak __typeof(& *self) weakSelf = self;
@@ -292,7 +294,35 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         [weakSelf.delegate spi:self transactionFlowStateChanged:weakSelf.state.copy];
     });
 }
+- (void)initiatePurchaseTx:(NSString *)posRefId purchaseAmount:(int)purchaseAmount tipAmount:(int)tipAmount cashoutAmount:(int)cashoutAmount promptForCashout:(bool)promptForCashout  completion:(SPICompletionTxResult)completion {
+    if (self.state.status == SPIStatusUnpaired) {
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        return;
+    }
+    if (tipAmount > 0 && (cashoutAmount > 0 || promptForCashout)){
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Cannot Accept Tips and Cashout at the same time."]);
+    }
+    __weak __typeof(& *self) weakSelf = self;
 
+    dispatch_async(self.queue, ^{
+        if (weakSelf.state.flow != SPIFlowIdle){
+            completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+        }
+        weakSelf.state.flow = SPIFlowTransaction;
+        SPIPurchaseRequest *purchase = [SPIPurchaseHelper createPurchaseRequestV2:posRefId purchaseAmount:purchaseAmount tipAmount:tipAmount cashAmount:cashoutAmount promptForCashout:promptForCashout];
+        purchase.config = weakSelf.config;
+        SPIMessage *purchaseMessage = [purchase toMessage];
+        weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId type:SPITransactionTypePurchase amountCents:purchaseAmount message:purchaseMessage msg:[NSString stringWithFormat:@"Waiting for EFTPOS connection to make payment request. %@",[purchase amountSummary]]];
+        if ([weakSelf send:purchaseMessage]){
+            [weakSelf.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS to accept payment for %@}",[purchase amountSummary]]];
+        }
+        
+    });
+    [weakSelf.delegate spi:self transactionFlowStateChanged:_state];
+    completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Purchase Initiated"]);
+
+    
+}
 - (void)initiateRefundTx:(NSString *)pid amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion {
     __weak __typeof(& *self) weakSelf = self;
     
@@ -303,8 +333,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         
         if (weakSelf.state.flow != SPIFlowIdle) return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
         
-        SPIRefundRequest *refund = [[SPIRefundRequest alloc] initWithRefundId:pid amountCents:amountCents];
-        
+        SPIRefundRequest *refund = [[SPIRefundRequest alloc] initWithPosRefId:pid amountCents:amountCents];
+        refund.config = weakSelf.config;
         weakSelf.state.flow = SPIFlowTransaction;
         SPIMessage *purchaseMessage = [refund toMessage];
         weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:pid
@@ -346,7 +376,51 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         
     });
 }
+-(void)initiateCashoutOnlyTx:(NSString *)posRefId amountCents:(int)amountCents completion:(SPICompletionTxResult)completion{
+    __weak __typeof(& *self) weakSelf = self;
+    
+        if (weakSelf.state.status == SPIStatusUnpaired) {
+            return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        }
+    dispatch_async(self.queue, ^{
+        if (weakSelf.state.flow != SPIFlowIdle){
+            return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not Idle"]);
+        }
+        CashoutOnlyRequest *cashoutOnlyRequest = [[CashoutOnlyRequest alloc] init:amountCents posRefId:posRefId];
+        cashoutOnlyRequest.config = weakSelf.config;
+        SPIMessage *cashoutMsg = [cashoutOnlyRequest toMessage];
+        weakSelf.state.flow = SPIFlowTransaction;
+        weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId type:SPITransactionTypeCashoutOnly amountCents:amountCents message:cashoutMsg msg:[NSString stringWithFormat:@"Waiting for EFTPOS connection to send cashout request for $%.2f",  ((float)amountCents / 100.0)]];
+        if ([weakSelf send:cashoutMsg]){
+            [weakSelf.state.txFlowState sent: [NSString stringWithFormat:@"Asked EFTPOS to do cashout for $%.2f",  ((float)amountCents / 100.0)]];
+        }
+        [weakSelf.state setTxFlowState:weakSelf.state.txFlowState];
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Cashout Initiated"]);
+        
+    });
+}
+-(void)initiateMotoPurchaseTx:(NSString *)posRefId amountCents:(int)amountCents completion:(SPICompletionTxResult)completion{
+    __weak __typeof(& *self) weakSelf = self;
+    if (weakSelf.state.status == SPIStatusUnpaired) {
+        return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+    }
+     dispatch_async(self.queue, ^{
+         if (weakSelf.state.flow != SPIFlowIdle){
+             return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not Idle"]);
+         }
+         SPIMotoPurchaseRequest *motoPurchaseRequest = [[SPIMotoPurchaseRequest alloc] init:amountCents posRefId:posRefId];
+         motoPurchaseRequest.config = weakSelf.config;
+         SPIMessage *cashoutMsg = [motoPurchaseRequest toMessage];
+         weakSelf.state.flow = SPIFlowTransaction;
+         weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId type:SPITransactionTypeMOTO amountCents:amountCents message:cashoutMsg msg:[NSString stringWithFormat:@"Waiting for EFTPOS connection to send MOTO request for %.2f",((float)amountCents)/100]];
+         if ([weakSelf send:cashoutMsg]){
+             [weakSelf.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS do MOTO for  %.2f",((float)amountCents)/100]];
+         }
+     });
+    [weakSelf.delegate spi:self transactionFlowStateChanged:weakSelf.state];
+    completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"MOTO Initiated"]);
 
+}
 - (void)cancelTransaction {
     __weak __typeof(& *self) weakSelf = self;
     
@@ -399,26 +473,30 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     });
 }
 - (void)initiateSettlementEnquiry:(NSString *)posRefId completion:(SPICompletionTxResult)completion {
-    if (_state.status == SPIStatusUnpaired){
-         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not Paired"]);
-    }
     __weak __typeof(& *self) weakSelf = self;
+    dispatch_async(self.queue, ^{
+        if (self.state.status == SPIStatusUnpaired){
+            completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not Paired"]);
+        }
+        
+        
+        @synchronized(self){
+            if (self.state.flow != SPIFlowIdle) {
+                completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not Idle"]);
+            }
+            
+            SPIMessage *stlEnqMsg = [[[SPISettlementEnquiryRequest alloc] initWithRequestId:[SPIRequestIdHelper idForString:@"stlenq"]] toMessage];
+            self.state.flow = SPIFlowTransaction;
+            self.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId type:SPITransactionTypeSettleEnquiry amountCents:0 message:stlEnqMsg msg:@"Waiting for EFTPOS connection to make a settlement enquiry"];
+            if ([self send:stlEnqMsg]){
+                [self.state.txFlowState sent:@"Asked EFTPOS to make a settlement enquiry."];
+            }
+        }
+        [weakSelf.delegate spi:self transactionFlowStateChanged:weakSelf.state.copy];
+        
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Settle Initiated"]);
+    });
     
-    @synchronized(self){
-        if (_state.flow != SPIFlowIdle) {
-         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not Idle"]);
-        }
-      
-        SPIMessage *stlEnqMsg = [[[SPISettlementEnquiryRequest alloc] initWithRequestId:[SPIRequestIdHelper idForString:@"stlenq"]] toMessage];
-        _state.flow = SPIFlowTransaction;
-        _state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId type:SPITransactionTypeSettleEnquiry amountCents:0 message:stlEnqMsg msg:@"Waiting for EFTPOS connection to make a settlement enquiry"];
-        if ([self send:stlEnqMsg]){
-            [_state.txFlowState sent:@"Asked EFTPOS to make a settlement enquiry."];
-        }
-    }
-    [weakSelf.delegate spi:self transactionFlowStateChanged:weakSelf.state.copy];
-
-    completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Settle Initiated"]);
 }
 - (void)initiateGetLastTxWithCompletion:(SPICompletionTxResult)completion {
     __weak __typeof(& *self) weakSelf = self;
@@ -942,7 +1020,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                         }
                     }
                     
-               
+                    
                     
                     
                     //[weakSelf.delegate spi:weakSelf statusChanged:weakSelf.state.copy];
@@ -955,17 +1033,17 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                         }
                     });
                     
-
-//                    [weakSelf.tryToReconnectTimer cancel];
-//                    [weakSelf.tryToReconnectTimer afterDelay:tryToReconnectTime repeat:NO block:^(id self) {
-//                        SPILog(@"tryToReconnect");
-//
-//                        if (weakSelf.state.status != SPIStatusUnpaired) {
-//                            SPILog(@"Try to reconnect now");
-//                            [weakSelf.connection connect];
-//                        }
-//                    }];
-
+                    
+                    //                    [weakSelf.tryToReconnectTimer cancel];
+                    //                    [weakSelf.tryToReconnectTimer afterDelay:tryToReconnectTime repeat:NO block:^(id self) {
+                    //                        SPILog(@"tryToReconnect");
+                    //
+                    //                        if (weakSelf.state.status != SPIStatusUnpaired) {
+                    //                            SPILog(@"Try to reconnect now");
+                    //                            [weakSelf.connection connect];
+                    //                        }
+                    //                    }];
+                    
                 } else if (weakSelf.state.flow == SPIFlowPairing) {
                     SPILog(@"Lost connection during pairing.");
                     weakSelf.state.pairingFlowState.message = @"Could not connect to pair. Check network/EFTPOS and try again...";
@@ -986,13 +1064,13 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  * so it disconnects.
  */
 - (void)startPeriodicPing {
-     __weak __typeof(& *self) weakSelf = self;
+    __weak __typeof(& *self) weakSelf = self;
     if (_pingTimer != nil){
         [_pingTimer cancel];
         _pingTimer = nil;
     }
     _pingTimer = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.ping"];
-
+    
     [_pingTimer afterDelay:0 repeat:true block:^(id self) {
         if (! weakSelf.connection.isConnected || weakSelf.secrets == nil){
             [weakSelf.pingTimer cancel];
@@ -1018,41 +1096,41 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         }
         weakSelf.missedPongsCount = 0;
         sleep(pingFrequency - pongTimeout);
-
+        
         
     }];
-
-//                                             {
-//                                                 _missedPongsCount += 1;
-//                                                 _log.Info($"Eftpos didn't reply to my Ping. Missed Count: {_missedPongsCount}/{_missedPongsToDisconnect}. ");
-//
-//                                                 if (_missedPongsCount < _missedPongsToDisconnect)
-//                                                 {
-//                                                     _log.Info("Trying another ping...");
-//                                                     continue;
-//                                                 }
-//
-//                                                 // This means that we have reached missed pong limit.
-//                                                 // We consider this connection as broken.
-//                                                 // Let's Disconnect.
-//                                                 _log.Info("Disconnecting...");
-//                                                 _conn.Disconnect();
-//                                                 break;
-//                                             }
-//                                             _missedPongsCount = 0;
-//                                             Thread.Sleep(_pingFrequency - _pongTimeout);
-//                                         }
-//                                     });
-//    _periodicPingThread.Start();
     
-//    SPILog(@"startPeriodicPing");
-//    self.missedPongsCount = 0;
-//
-//    // If we were already set up, clean up before restarting.
-//    [self stopPeriodPing];
-//
-//    //There can be no delay onces started or else will get error!!
-//    [self doPing];
+    //                                             {
+    //                                                 _missedPongsCount += 1;
+    //                                                 _log.Info($"Eftpos didn't reply to my Ping. Missed Count: {_missedPongsCount}/{_missedPongsToDisconnect}. ");
+    //
+    //                                                 if (_missedPongsCount < _missedPongsToDisconnect)
+    //                                                 {
+    //                                                     _log.Info("Trying another ping...");
+    //                                                     continue;
+    //                                                 }
+    //
+    //                                                 // This means that we have reached missed pong limit.
+    //                                                 // We consider this connection as broken.
+    //                                                 // Let's Disconnect.
+    //                                                 _log.Info("Disconnecting...");
+    //                                                 _conn.Disconnect();
+    //                                                 break;
+    //                                             }
+    //                                             _missedPongsCount = 0;
+    //                                             Thread.Sleep(_pingFrequency - _pongTimeout);
+    //                                         }
+    //                                     });
+    //    _periodicPingThread.Start();
+    
+    //    SPILog(@"startPeriodicPing");
+    //    self.missedPongsCount = 0;
+    //
+    //    // If we were already set up, clean up before restarting.
+    //    [self stopPeriodPing];
+    //
+    //    //There can be no delay onces started or else will get error!!
+    //    [self doPing];
 }
 
 /**
@@ -1287,7 +1365,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 }
 
 @end
-@implementation SpiConfig
+@implementation SPIConfig
 -(void)addReceiptConfig:(NSMutableDictionary*) data{
     if (_promptForCustomerCopyOnEftpos){
         [data setObject:[NSNumber numberWithBool:_promptForCustomerCopyOnEftpos] forKey:@"prompt_for_customer_copy"];

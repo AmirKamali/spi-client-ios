@@ -117,7 +117,7 @@ NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomi
 }
 
 - (BOOL)isSuccess {
-    return [self getDataBoolValue:@"success"];
+    return [self getDataBoolValue:@"success" defaultIfNotFound:false];
 }
 
 - (NSString *)error {
@@ -135,7 +135,7 @@ NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomi
         if (!self.data) {
             _successState = SPIMessageSuccessStateUnknown;
         } else {
-            _successState = [self getDataBoolValue:@"success"] ? SPIMessageSuccessStateSuccess : SPIMessageSuccessStateFailed;
+            _successState = [self getDataBoolValue:@"success" defaultIfNotFound:false] ? SPIMessageSuccessStateSuccess : SPIMessageSuccessStateFailed;
         }
     }
     
@@ -208,10 +208,10 @@ NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomi
     return 0;
 }
 
-- (BOOL)getDataBoolValue:(NSString *)attribute {
+- (BOOL)getDataBoolValue:(NSString *)attribute defaultIfNotFound:(BOOL)defaultIfNotFound{
     NSObject *v = self.data[attribute];
     if (v != [NSNull null]) return ((NSString *)v).boolValue;
-    return false;
+    return defaultIfNotFound;
 }
 
 - (NSDictionary *)getDataDictionaryValue:(NSString *)attribute {
