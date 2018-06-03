@@ -373,7 +373,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         
     });
 }
--(void)initiateCashoutOnlyTx:(NSString *)posRefId amountCents:(int)amountCents completion:(SPICompletionTxResult)completion{
+-(void)initiateCashoutOnlyTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion{
     __weak __typeof(& *self) weakSelf = self;
     
         if (weakSelf.state.status == SPIStatusUnpaired) {
@@ -396,7 +396,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         
     });
 }
--(void)initiateMotoPurchaseTx:(NSString *)posRefId amountCents:(int)amountCents completion:(SPICompletionTxResult)completion{
+-(void)initiateMotoPurchaseTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion{
     __weak __typeof(& *self) weakSelf = self;
     if (weakSelf.state.status == SPIStatusUnpaired) {
         return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);

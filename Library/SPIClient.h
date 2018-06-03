@@ -160,7 +160,7 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  * @param amountCents NSInteger
  * @param completion SPICompletionTxResult
  */
--(void)initiateMotoPurchaseTx:(NSString *)posRefId amountCents:(int)amountCents completion:(SPICompletionTxResult)completion;
+-(void)initiateMotoPurchaseTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion;
 
 /**
  * Initiates a cashout only transaction. Be subscribed to TxFlowStateChanged event to get updates on the process.
@@ -169,7 +169,7 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  * @param amountCents NSInteger
  * @param completion SPICompletionTxResult
  */
--(void)initiateCashoutOnlyTx:(NSString *)posRefId amountCents:(int)amountCents completion:(SPICompletionTxResult)completion;
+-(void)initiateCashoutOnlyTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion;
 
 /**
  * Initiates a Mail Order / Telephone Order Purchase Transaction
