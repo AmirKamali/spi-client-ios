@@ -152,6 +152,33 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  */
 - (void)initiateRefundTx:(NSString *)pid amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion;
 
+
+/**
+ * Initiates a Mail Order / Telephone Order Purchase Transaction
+ *
+ * @param posRefId Alphanumeric Identifier for your transaction.
+ * @param amountCents NSInteger
+ * @param completion SPICompletionTxResult
+ */
+-(void)initiateMotoPurchaseTx:(NSString *)posRefId amountCents:(int)amountCents completion:(SPICompletionTxResult)completion;
+
+/**
+ * Initiates a cashout only transaction. Be subscribed to TxFlowStateChanged event to get updates on the process.
+ *
+ * @param posRefId Alphanumeric Identifier for your transaction.
+ * @param amountCents NSInteger
+ * @param completion SPICompletionTxResult
+ */
+-(void)initiateCashoutOnlyTx:(NSString *)posRefId amountCents:(int)amountCents completion:(SPICompletionTxResult)completion;
+
+/**
+ * Initiates a Mail Order / Telephone Order Purchase Transaction
+ *
+ * @param posRefId Unique ID
+ * @param completion SPICompletionTxResult
+ */
+- (void)initiateSettlementEnquiry:(NSString *)posRefId completion:(SPICompletionTxResult)completion;
+
 /**
  * Let the EFTPOS know whether merchant accepted or declined the signature
  *
