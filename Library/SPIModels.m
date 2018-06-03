@@ -73,7 +73,36 @@
     
     return self;
 }
-
+- (NSString *)txTypeString {
+    switch (self.type) {
+        case SPITransactionTypePurchase:
+            return @"PURCHASE";
+            
+        case SPITransactionTypeRefund:
+            return @"REFUND";
+            
+        case SPITransactionTypeCashoutOnly:
+            return @"CASHOUT ONLY";
+            break;
+        case SPITransactionTypeMOTO:
+            return @"MOTO";
+            break;
+        case SPITransactionTypeSettle:
+            return @"SETTLE";
+            
+        case SPITransactionTypeSettleEnquiry:
+            return @"SETTLE ENQUIRY";
+            break;
+        case SPITransactionTypeGetLastTransaction:
+            return @"GET_LAST_TRANSACTION";
+        case SPITransactionTypePreAuth:
+            return @"PRE AUTH";
+            break;
+        case SPITransactionTypeAccountVerify:
+            return @"ACCOUNT VERIFY";
+            break;
+    }
+}
 - (void)sent:(NSString *)msg {
     self.isRequestSent        = YES;
     self.requestDate          = [NSDate date];

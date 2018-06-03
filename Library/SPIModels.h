@@ -106,6 +106,7 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 
 // Purchase/Refund/Settle/...
 @property (nonatomic, assign) SPITransactionType type;
+@property (nonatomic,readonly) NSString* typeString;
 
 // A text message to display on your Transaction Flow Screen
 @property (nonatomic, copy) NSString *displayMessage;
