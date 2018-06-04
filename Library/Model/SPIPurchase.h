@@ -53,9 +53,15 @@
 
 - (NSString *)getResponseText;
 
+- (NSString *)getResponseCode;
+
+- (NSString *)getTerminalReferenceId;
+
 - (NSString *)getResponseValueWithAttribute:(NSString *)attribute;
 
 - (NSString *)hostResponseText;
+
+-(NSDictionary *)toPaymentSummary;
 
 
 @end

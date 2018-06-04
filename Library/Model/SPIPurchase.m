@@ -80,6 +80,46 @@
     return [self.message getDataStringValue:@"host_response_text"];
 }
 
+- (NSString *)getResponseCode{
+    return [self.message getDataStringValue:@"host_response_code"];
+}
+
+- (NSString *)getTerminalReferenceId{
+    return [self.message getDataStringValue:@"terminal_ref_id"];
+}
+- (NSString *)getCardEntry{
+    return [self.message getDataStringValue:@"card_entry"];
+}
+- (NSString *)getAccountType{
+    return [self.message getDataStringValue:@"terminal_ref_id"];
+}
+- (NSString *)getAuthCode{
+    return [self.message getDataStringValue:@"auth_code"];
+}
+- (NSString *)getBankDate{
+    return [self.message getDataStringValue:@"bank_date"];
+}
+- (NSString *)getBankTime{
+    return [self.message getDataStringValue:@"bank_time"];
+}
+- (NSString *)getMaskedPan{
+    return [self.message getDataStringValue:@"masked_pan"];
+}
+- (NSString *)getTerminalId{
+    return [self.message getDataStringValue:@"terminal_id"];
+}
+- (BOOL)wasMerchantReceiptPrinted{
+    return [self.message getDataBoolValue:@"merchant_receipt_printed" defaultIfNotFound:false];
+}
+- (BOOL)wasCustomerReceiptPrinted{
+    return [self.message getDataBoolValue:@"customer_receipt_printed" defaultIfNotFound:false];
+}
+- (NSDate *)getSettlementDate {
+    //"bank_settlement_date":"20042018"
+    NSString *dateStr =  [self.message getDataStringValue:@"bank_settlement_date"];
+    return [[NSDateFormatter dateNoTimeZoneFormatter] dateFromString:dateStr];
+
+}
 - (NSString *)getResponseValueWithAttribute:(NSString *)attribute {
     return [self.message getDataStringValue:attribute];
 }
@@ -87,12 +127,15 @@
 - (NSString *)hostResponseText {
     return [self.message getDataStringValue:@"host_response_text"];
 }
+
 - (NSInteger)getPurchaseAmount{
     return [self.message getDataIntegerValue:@"purchase_amount"];
 }
+
 - (NSInteger)getTipAmount{
     return [self.message getDataIntegerValue:@"tip_amount"];
 }
+
 - (NSInteger)getCashoutAmount{
     return [self.message getDataIntegerValue:@"cash_amount"];
 }
@@ -103,6 +146,25 @@
 
 - (NSInteger)getBankCashAmount{
     return [self.message getDataIntegerValue:@"bank_cash_amount"];
+}
+
+- (NSDictionary *)toPaymentSummary{
+    return @{
+             @"account_type": [self getAccountType],
+             @"auth_code": [self getAuthCode],
+             @"bank_date": [self getBankDate],
+             @"bank_time": [self getBankTime],
+             @"host_response_code": [self getResponseCode],
+             @"host_response_text": [self getResponseText],
+             @"masked_pan": [self getMaskedPan],
+             @"purchase_amount": [NSNumber numberWithInteger:[self getPurchaseAmount]],
+             @"rrn": [self getRRN],
+             @"scheme_name": _schemeName,
+             @"terminal_id": [self getTerminalId],
+             @"terminal_ref_id": [self getTerminalReferenceId],
+             @"tip_amount": [NSNumber numberWithInteger:[self getTipAmount]]
+             
+             };
 }
 
 @end

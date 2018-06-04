@@ -51,7 +51,7 @@
 
 @implementation SPITransactionFlowState
 
-- (instancetype)initWithTid:(NSString *)tid
+- (instancetype)initWithTid:(NSString *)posRefId
                        type:(SPITransactionType)type
                 amountCents:(NSInteger)amountCents
                     message:(SPIMessage *)message
@@ -60,7 +60,8 @@
     self = [super init];
     
     if (self) {
-        self.tid                      = tid;
+        self.tid                      = posRefId;
+        self.posRefId                 = posRefId;
         self.type                     = type;
         self.amountCents              = amountCents;
         self.isRequestSent            = NO;
@@ -183,6 +184,11 @@
     state.isAwaitingGltResponse    = self.isAwaitingGltResponse;
     
     return state;
+}
+-(void)phoneForAuthRequired:(SPIPhoneForAuthRequired *) spiMessage msg:(NSString *)msg{
+    _phoneForAuthRequiredMessage = spiMessage;
+    _isAwaitingGltResponse = true;
+    _displayMessage = msg;
 }
 
 - (NSString *)description {

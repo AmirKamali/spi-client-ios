@@ -102,7 +102,9 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 @interface SPITransactionFlowState : NSObject <NSCopying>
 
 //  The id given to this transaction
-@property (nonatomic, copy) NSString *tid;
+@property (nonatomic, copy) NSString *tid __deprecated_msg("Use posRefId instead.");
+
+@property (nonatomic, copy) NSString *posRefId;
 
 // Purchase/Refund/Settle/...
 @property (nonatomic, assign) SPITransactionType type;
@@ -148,6 +150,9 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 // The message the we received from EFTPOS that told us that signature is required.
 @property (nonatomic, strong) SPISignatureRequired *signatureRequiredMessage;
 
+// The message the we received from EFTPOS that told us that Phone For Auth is required.
+@property (nonatomic, strong) SPIPhoneForAuthRequired *phoneForAuthRequiredMessage;
+
 // The time when the cancel attempt was made.
 @property (nonatomic, strong) NSDate *cancelAttemptTime;
 
@@ -180,6 +185,8 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 - (void)completed:(SPIMessageSuccessState)state response:(SPIMessage *)response msg:(NSString *)msg;
 
 - (void)unknownCompleted:(NSString *)msg;
+
+-(void)phoneForAuthRequired:(SPIPhoneForAuthRequired *) spiMessage msg:(NSString *)msg;
 
 @end
 

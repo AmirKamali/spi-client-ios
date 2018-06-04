@@ -14,6 +14,8 @@
 #import "SPIModels.h"
 
 @class SPIClient;
+@class SPIPreAuth;
+@class SPIPayAtTable;
 @interface SPIConfig:NSObject
 @property (nonatomic) BOOL promptForCustomerCopyOnEftpos;
 @property (nonatomic) BOOL signatureFlowOnEftpos;
@@ -178,7 +180,6 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  * @param completion SPICompletionTxResult
  */
 - (void)initiateSettlementEnquiry:(NSString *)posRefId completion:(SPICompletionTxResult)completion;
-
 /**
  * Let the EFTPOS know whether merchant accepted or declined the signature
  *
@@ -202,7 +203,7 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  */
 - (void)initiateSettleTx:(NSString *)pid completion:(SPICompletionTxResult)completion;
 
-- (void)initiateSettlementEnquiry:(NSString *)posRefId completion:(SPICompletionTxResult)completion;
+
 /**
  * Initiates a get last transaction operation.
  * Use this when you want to retrieve the most recent transaction that was processed by the EFTPOS.
@@ -238,5 +239,10 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
                        requestDate:(NSDate *)requestDate
                           posRefId:(NSString *)posRefId;
 
+- (BOOL)send:(SPIMessage *)message;
+
+-(SPIPayAtTable *)enablePayAtTable;
+
+-(SPIPreAuth *)enablePreauth;
 @end
 
