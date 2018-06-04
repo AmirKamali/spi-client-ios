@@ -12,9 +12,9 @@
 @class SPIMessage;
 @class SPIConfig;
 @interface SPIPurchaseRequest : NSObject
-@property (nonatomic, readonly, copy) NSString *purchaseId DEPRECATED_ATTRIBUTE;
+@property (nonatomic, readonly, copy) NSString *purchaseId DEPRECATED_MSG_ATTRIBUTE("Id is deprecated. Use PosRefId instead.");
 @property (nonatomic, readonly, copy) NSString *posRefId;
-@property (nonatomic, readonly) NSInteger      amountCents DEPRECATED_ATTRIBUTE;
+@property (nonatomic, readonly) NSInteger      amountCents DEPRECATED_MSG_ATTRIBUTE("AmountCents is deprecated. Use PurchaseAmount instead.");
 @property (nonatomic, readonly) NSInteger      purchaseAmount;
 @property (nonatomic) NSInteger                tipAmount;
 @property (nonatomic) NSInteger                cashoutAmount;

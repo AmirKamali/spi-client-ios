@@ -82,7 +82,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         _disconnectIfNeededSourceTimer = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.disconnect"];
         _transactionMonitoringTimer    = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.txMonitor"];
         //   _tryToReconnectTimer           = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.tryToReconnect"];
-        
+        _config = [[SPIConfig alloc] init];
         _state = [SPIState new];
     }
     

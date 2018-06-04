@@ -19,6 +19,7 @@
     self = [super init];
     
     if (self) {
+        _config = [[SPIConfig alloc] init];
         _posRefId  = posRefId;
         _purchaseAmount = amountCents;
         
@@ -31,7 +32,8 @@
     
 }
 - (SPIMessage *)toMessage {
-    NSDictionary *originalData = @{@"purchase_amount":@(self.purchaseAmount),
+    NSDictionary *originalData = @{@"pos_ref_id": self.posRefId,
+                                   @"purchase_amount":@(self.purchaseAmount),
                                   @"tip_amount":@(self.tipAmount),
                                   @"cash_amount":@(self.cashoutAmount),
                                   @"prompt_for_cashout":@(self.promptForCashout)
