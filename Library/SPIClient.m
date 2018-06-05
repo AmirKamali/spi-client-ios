@@ -842,7 +842,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [self.state.txFlowState completed:m.successState response:m msg:@"Purchase transaction ended."];
     // TH-6A, TH-6E
     
-    [self.delegate spi:self transactionFlowStateChanged:self.state.copy];
+    [self.delegate spi:self transactionFlowStateChanged:self.state];
 }
 
 /**

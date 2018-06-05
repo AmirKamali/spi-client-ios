@@ -116,11 +116,12 @@
 - (BOOL)wasCustomerReceiptPrinted{
     return [self.message getDataBoolValue:@"customer_receipt_printed" defaultIfNotFound:false];
 }
-- (NSDate *)getSettlementDate {
-    //"bank_settlement_date":"20042018"
-    NSString *dateStr =  [self.message getDataStringValue:@"bank_settlement_date"];
-    return [[NSDateFormatter dateNoTimeZoneFormatter] dateFromString:dateStr];
-
+-(NSDate *)getSettlementDate{
+    NSString *dateStr = [_message getDataStringValue:@"bank_settlement_date"];
+    if (dateStr.length == 0){
+        return nil;
+    }
+    return [[NSDateFormatter bankSettleMentFormat] dateFromString:dateStr];
 }
 - (NSString *)getResponseValueWithAttribute:(NSString *)attribute {
     return [self.message getDataStringValue:attribute];
@@ -168,6 +169,7 @@
              
              };
 }
+
 
 @end
 
@@ -353,7 +355,14 @@
     
     return (NSString *)self.message.data[attribute] ?: @"";
 }
-
+-(NSDate *)getSettlementDate{
+    NSString *dateStr = [_message getDataStringValue:@"bank_settlement_date"];
+    if (dateStr.length == 0){
+        return nil;
+    }
+    return [[NSDateFormatter dateNoTimeZoneFormatter] dateFromString:dateStr];
+    
+}
 @end
 
 @implementation SPISignatureRequired : NSObject

@@ -63,6 +63,8 @@
 
 -(NSDictionary *)toPaymentSummary;
 
+- (NSDate *)getSettlementDate;
+
 
 @end
 
@@ -135,6 +137,8 @@
 - (NSString *)getResponseText;
 
 - (NSString *)getResponseValue:(NSString *)attribute;
+
+- (NSDate *)getSettlementDate;
 @end
 
 @interface SPISignatureRequired : NSObject
