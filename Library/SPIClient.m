@@ -332,6 +332,36 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     
     
 }
+- (void)initiatePurchaseTxV2:(NSString *)posRefId purchaseAmount:(NSInteger)purchaseAmount tipAmount:(NSInteger)tipAmount cashoutAmount:(NSInteger)cashoutAmount promptForCashout:(BOOL)promptForCashout completion:(SPICompletionTxResult)completion{
+ 
+    if (self.state.status == SPIStatusUnpaired) {
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        return;
+    }
+    
+    if (tipAmount > 0 && (cashoutAmount > 0 || promptForCashout)){
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Cannot Accept Tips and Cashout at the same time."]);
+    }
+    __weak __typeof(& *self) weakSelf = self;
+    
+    dispatch_async(self.queue, ^{
+        if (weakSelf.state.flow != SPIFlowIdle){
+            completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+        }
+        weakSelf.state.flow = SPIFlowTransaction;
+        SPIPurchaseRequest *purchase = [SPIPurchaseHelper createPurchaseRequestV2:posRefId purchaseAmount:purchaseAmount tipAmount:tipAmount cashAmount:cashoutAmount promptForCashout:promptForCashout];
+        SPIMessage *purchaseMsg = [purchase toMessage];
+        
+        weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId type:SPITransactionTypePurchase amountCents:purchaseAmount message:purchaseMsg msg:[NSString stringWithFormat:@"Waiting for EFTPOS connection to make payment request. %@",[purchase amountSummary]]];
+        if ([weakSelf send:purchaseMsg]){
+            [weakSelf.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS to accept payment for %@}",[purchase amountSummary]]];
+        }
+        
+    });
+    [weakSelf.delegate spi:self transactionFlowStateChanged:_state];
+    completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Purchase Initiated"]);
+}
+
 - (void)initiateRefundTx:(NSString *)pid amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion {
     __weak __typeof(& *self) weakSelf = self;
     

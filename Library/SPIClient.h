@@ -146,6 +146,20 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
 - (void)initiatePurchaseTx:(NSString *)pid amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion;
 
 /**
+ * Tip and cashout are not allowed simultaneously.
+ * Initiates a purchase transaction. Be subscribed to TxFlowStateChanged event to get updates on the process.
+ *
+ * @param posRefId An Unique Identifier for your Order/Purchase
+ * @param purchaseAmount The Purchase Amount in Cents
+ * @param tipAmount The Tip Amount in Cents
+ * @param cashoutAmount The Cashout Amount in Cents
+ * @param promptForCashout Whether to prompt your customer for cashout on the Eftpos
+ * @param completion SPICompletionTxResult
+ */
+- (void)initiatePurchaseTxV2:(NSString *)posRefId purchaseAmount:(NSInteger)purchaseAmount tipAmount:(NSInteger)tipAmount cashoutAmount:(NSInteger)cashoutAmount promptForCashout:(BOOL)promptForCashout completion:(SPICompletionTxResult)completion;
+
+
+/**
  * Initiates a refund transaction. Be subscribed to TxFlowStateChanged event to get updates on the process.
  *
  * @param pid Unique ID
