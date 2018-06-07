@@ -48,6 +48,14 @@
 }
 
 @end
+@implementation SPISubmitAuthCodeResult
+- (instancetype)initWithValidFormat:(BOOL)isValidFormat
+                                msg:(NSString *)message{
+    _isValidFormat = isValidFormat;
+    _message = message;
+    return self;
+}
+@end
 
 @implementation SPITransactionFlowState
 
@@ -151,6 +159,7 @@
     self.isAttemptingToCancel     = NO;
     self.isAwaitingGltResponse    = NO;
     self.isAwaitingSignatureCheck = NO;
+    self.isAwaitingPhoneForAuth   = NO;
     self.displayMessage           = msg;
 }
 
@@ -161,6 +170,7 @@
     self.isAttemptingToCancel     = NO;
     self.isAwaitingGltResponse    = NO;
     self.isAwaitingSignatureCheck = NO;
+    self.isAwaitingPhoneForAuth   = NO;
     self.displayMessage           = msg;
 }
 
@@ -187,7 +197,12 @@
 }
 -(void)phoneForAuthRequired:(SPIPhoneForAuthRequired *) spiMessage msg:(NSString *)msg{
     _phoneForAuthRequiredMessage = spiMessage;
-    _isAwaitingGltResponse = true;
+    _isAwaitingGltResponse    = true;
+    _isAwaitingPhoneForAuth   = true;
+    _displayMessage = msg;
+}
+-(void)authCodeSent:(NSString *) msg{
+    _isAwaitingPhoneForAuth = false;
     _displayMessage = msg;
 }
 

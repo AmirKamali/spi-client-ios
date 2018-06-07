@@ -96,6 +96,14 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 
 @end
 
+@interface SPISubmitAuthCodeResult:NSObject
+@property (nonatomic, assign) BOOL isValidFormat;
+// Text that gives reason for Invalidity
+@property (nonatomic, copy) NSString *message;
+
+- (instancetype)initWithValidFormat:(BOOL)isValidFormat
+                                msg:(NSString *)message;
+@end
 /**
  * Represents the State during a TransactionFlow
  */
@@ -133,6 +141,8 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 // When this flag is on, you need to display the dignature accept/decline buttons in your
 // transaction flow screen.
 @property (nonatomic, assign) BOOL isAwaitingSignatureCheck;
+
+@property (nonatomic, assign) BOOL isAwaitingPhoneForAuth;
 
 // Whether this transaction flow is over or not.
 @property (nonatomic, assign) BOOL isFinished;
@@ -182,12 +192,13 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 
 - (void)signatureResponded:(NSString *)msg;
 
+- (void)phoneForAuthRequired:(SPIPhoneForAuthRequired *) spiMessage msg:(NSString *)msg;
+
+- (void)authCodeSent:(NSString *) msg;
+
 - (void)completed:(SPIMessageSuccessState)state response:(SPIMessage *)response msg:(NSString *)msg;
 
 - (void)unknownCompleted:(NSString *)msg;
-
--(void)phoneForAuthRequired:(SPIPhoneForAuthRequired *) spiMessage msg:(NSString *)msg;
-
 @end
 
 /**

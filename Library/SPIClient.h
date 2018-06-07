@@ -23,6 +23,7 @@
 
 @end
 typedef void (^SPICompletionTxResult)(SPIInitiateTxResult *result);
+typedef void (^SPIAuthCodeSubmitCompletionResult)(SPISubmitAuthCodeResult *result);
 
 /**
  * Completion handler
@@ -200,6 +201,18 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  * @param accepted YES if merchant accepted the signature from customer or else NO
  */
 - (void)acceptSignature:(BOOL)accepted;
+
+/**
+ *
+ * Submit the Code obtained by your user when phoning for auth.
+ * It will return immediately to tell you whether the code has a valid format or not.
+ * If valid==true is returned, no need to do anything else. Expect updates via standard callback.
+ * If valid==false is returned, you can show your user the accompanying message, and invite them to enter another code.
+ *
+ * @param authCode The code obtained by your user from the merchant call centre. It should be a 6-character alpha-numeric value.
+ * @param completion Whether code has a valid format or not.
+ */
+- (void)submitAuthCode:(NSString *)authCode completion:(SPIAuthCodeSubmitCompletionResult)completion;
 
 /**
  * Attempts to cancel a Transaction.

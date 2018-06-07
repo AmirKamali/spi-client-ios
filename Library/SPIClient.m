@@ -333,7 +333,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     
 }
 - (void)initiatePurchaseTxV2:(NSString *)posRefId purchaseAmount:(NSInteger)purchaseAmount tipAmount:(NSInteger)tipAmount cashoutAmount:(NSInteger)cashoutAmount promptForCashout:(BOOL)promptForCashout completion:(SPICompletionTxResult)completion{
- 
+    
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
         return;
@@ -440,6 +440,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 }
 -(void)initiateMotoPurchaseTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion{
     __weak __typeof(& *self) weakSelf = self;
+    
     if (weakSelf.state.status == SPIStatusUnpaired) {
         return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
     }
@@ -447,7 +448,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         if (weakSelf.state.flow != SPIFlowIdle){
             return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not Idle"]);
         }
-        SPIMotoPurchaseRequest *motoPurchaseRequest = [[SPIMotoPurchaseRequest alloc] init:amountCents posRefId:posRefId];
+        SPIMotoPurchaseRequest *motoPurchaseRequest = [[SPIMotoPurchaseRequest alloc] initWithAmountCents:amountCents posRefId:posRefId];
         motoPurchaseRequest.config = weakSelf.config;
         SPIMessage *cashoutMsg = [motoPurchaseRequest toMessage];
         weakSelf.state.flow = SPIFlowTransaction;
@@ -459,6 +460,30 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [weakSelf.delegate spi:self transactionFlowStateChanged:weakSelf.state];
     completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"MOTO Initiated"]);
     
+}
+- (void)submitAuthCode:(NSString *)authCode completion:(SPIAuthCodeSubmitCompletionResult)completion{
+    __weak __typeof(& *self) weakSelf = self;
+    
+    if (authCode.length != 6){
+        return completion([[SPISubmitAuthCodeResult alloc] initWithValidFormat:false msg:@"Not a 6-digit code."]);
+    }
+    
+    dispatch_async(self.queue, ^{
+        if (weakSelf.state.flow != SPIFlowTransaction ||
+            weakSelf.state.txFlowState.isFinished ||
+            !weakSelf.state.txFlowState.isAwaitingPhoneForAuth)
+        {
+            SPILog(@"Asked to send auth code but I was not waiting for one.");
+            completion([[SPISubmitAuthCodeResult alloc] initWithValidFormat:false msg:@"Was not waiting for one."]);
+        }
+        [weakSelf.state.txFlowState authCodeSent:[NSString stringWithFormat:@"Submitting Auth Code %@",authCode]];
+        
+        SPIMessage *message = [[[SPIAuthCodeAdvice alloc] initWithPosRefId:weakSelf.state.txFlowState.posRefId authCode:authCode] toMessage];
+        [self send:message];
+    });
+    
+    [weakSelf.delegate spi:self transactionFlowStateChanged:_state];
+    completion([[SPISubmitAuthCodeResult alloc] initWithValidFormat:true msg:@"Valid Code"]);
 }
 - (void)cancelTransaction {
     __weak __typeof(& *self) weakSelf = self;
@@ -823,18 +848,18 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 - (void)handleCashoutOnlyResponse:(SPIMessage *)m {
     NSLog(@"handleCashoutOnlyResponse");
     __weak __typeof(& *self) weakSelf = self;
-
-     dispatch_async(self.queue, ^{
-         NSString *incomingPosRefId = [m getDataStringValue:@"pos_ref_id"];
-         if (weakSelf.state.flow != SPIFlowTransaction || weakSelf.state.txFlowState.isFinished || ! [weakSelf.state.txFlowState.posRefId isEqualToString:incomingPosRefId])
-         {
-             SPILog(@"Received Cashout Response but I was not waiting for one. Incoming Pos Ref ID:  %@",incomingPosRefId);
-             return;
-         }
-         // TH-1A, TH-2A
-         [weakSelf.state.txFlowState completed:[m successState] response:m msg:@"Cashout Transaction Ended."];
-         // TH-6A, TH-6E
-     });
+    
+    dispatch_async(self.queue, ^{
+        NSString *incomingPosRefId = [m getDataStringValue:@"pos_ref_id"];
+        if (weakSelf.state.flow != SPIFlowTransaction || weakSelf.state.txFlowState.isFinished || ! [weakSelf.state.txFlowState.posRefId isEqualToString:incomingPosRefId])
+        {
+            SPILog(@"Received Cashout Response but I was not waiting for one. Incoming Pos Ref ID:  %@",incomingPosRefId);
+            return;
+        }
+        // TH-1A, TH-2A
+        [weakSelf.state.txFlowState completed:[m successState] response:m msg:@"Cashout Transaction Ended."];
+        // TH-6A, TH-6E
+    });
     [weakSelf.delegate spi:self transactionFlowStateChanged:_state];
 }
 - (void)handleMotoPurchaseResponse:(SPIMessage *)m {
@@ -940,60 +965,77 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  */
 - (void)handleGetLastTransactionResponse:(SPIMessage *)m {
     NSLog(@"handleGetLastTransactionResponse");
+    __weak __typeof(& *self) weakSelf = self;
     
-    SPITransactionFlowState *txState = self.state.txFlowState;
-    
-    if (self.state.flow != SPIFlowTransaction || txState.isFinished) {
-        // We were not in the middle of a transaction, who cares?
-        return;
-    }
-    
-    // TH-4 We were in the middle of a transaction.
-    // Let's attempt recovery. This is step 4 of transaction processing handling
-    SPILog(@"Got last transaction. Attempting recovery.");
-    [txState gotGltResponse];
-    
-    SPIGetLastTransactionResponse *gltResponse = [[SPIGetLastTransactionResponse alloc] initWithMessage:m];
-    
-    NSDate *reqServerDate = [txState.requestDate dateByAddingTimeInterval:self.spiMessageStamp.serverTimeDelta];
-    reqServerDate = [reqServerDate dateByAddingTimeInterval:txServerAdjustmentTimeInterval];
-    
-    if (!gltResponse.wasRetrievedSuccessfully) {
-        if (gltResponse.wasOperationInProgressError) {
-            // TH-4E - Operation In Progress
-            SPILog(@"Operation still in progress... Stay waiting.");
-        } else {
-            // TH-4X - Unexpected Error when recovering
-            SPILog(@"Unexpected error in get last transaction response during transaction recovery: %@", m.error);
-            [txState unknownCompleted:@"Unexpected error when recovering transaction status. Check EFTPOS."];
-        }
-    } else {
-        if (txState.type == SPITransactionTypeGetLastTransaction) {
-            // THIS WAS A PLAIN GET LAST TRANSACTION REQUEST, NOT FOR RECOVERY PURPOSES.
-            SPILog(@"Retrieved last transaction as asked directly by the user.");
-            [gltResponse copyMerchantReceiptToCustomerReceipt];
-            [txState completed:gltResponse.successState response:m msg:@"Last transaction retrieved"];
-        } else {
-            // TH-4A - Let's try to match the received last transaction against the current transaction
-            SPIMessageSuccessState successState = [self gltMatch:gltResponse
-                                                    expectedType:txState.type
-                                                  expectedAmount:txState.amountCents
-                                                     requestDate:txState.requestDate
-                                                        posRefId:@"_NOT_IMPL_YET"];
-            
-            if (successState == SPIMessageSuccessStateUnknown) {
-                // TH-4N: Didn't Match our transaction. Consider Unknown State.
-                SPILog(@"Did not match transaction.");
-                [txState unknownCompleted:@"Failed to recover transaction status. Check EFTPOS."];
-            } else {
-                // TH-4Y: We Matched, transaction finished, let's update ourselves
-                [gltResponse copyMerchantReceiptToCustomerReceipt];
-                [txState completed:successState response:m msg:@"Transaction ended."];
-            }
+    dispatch_async(self.queue, ^{
+        
+        SPITransactionFlowState *txState = self.state.txFlowState;
+        
+        if (self.state.flow != SPIFlowTransaction || txState.isFinished) {
+            // We were not in the middle of a transaction, who cares?
+            return;
         }
         
-        [self.delegate spi:self transactionFlowStateChanged:self.state];
-    }
+        // TH-4 We were in the middle of a transaction.
+        // Let's attempt recovery. This is step 4 of transaction processing handling
+        SPILog(@"Got last transaction. Attempting recovery.");
+        [txState gotGltResponse];
+        
+        SPIGetLastTransactionResponse *gltResponse = [[SPIGetLastTransactionResponse alloc] initWithMessage:m];
+        if (!gltResponse.wasRetrievedSuccessfully) {
+            if ([gltResponse isStillInProgress:txState.posRefId]) {
+                // TH-4E - Operation In Progress
+                if ([gltResponse isWaitingForSignatureResponse] && !txState.isAwaitingSignatureCheck)
+                {
+                    SPILog(@"Eftpos is waiting for us to send it signature accept/decline, but we were not aware of this. The user can only really decline at this stage as there is no receipt to print for signing.");
+                    [weakSelf.state.txFlowState signatureRequired:[[SPISignatureRequired alloc] initWithPosRefId:txState.posRefId requestId:m.mid receiptToSign:@"MISSING RECEIPT\n DECLINE AND TRY AGAIN."] msg:@"Recovered in Signature Required but we don't have receipt. You may Decline then Retry."];
+                }
+                else if ([gltResponse isWaitingForAuthCode] && !txState.isAwaitingPhoneForAuth)
+                {
+                    SPILog(@"Eftpos is waiting for us to send it auth code, but we were not aware of this. We can only cancel the transaction at this stage as we don't have enough information to recover from this.");
+                    
+                    [weakSelf.state.txFlowState phoneForAuthRequired:[[SPIPhoneForAuthRequired alloc] initWithPosRefId:txState.posRefId requestId:m.mid phoneNumber:@"UNKNOWN" merchantId:@"UNKNOWN"] msg:@"Recovered mid Phone-For-Auth but don't have details. You may Cancel then Retry."];
+                }
+                else
+                {
+                    SPILog(@"Operation still in progress... stay waiting.");
+                    // No need to publish txFlowStateChanged. Can return;
+                    return;
+                }
+            } else {
+                // TH-4X - Unexpected Error when recovering
+                SPILog(@"Unexpected Response in Get Last Transaction during - Received posRefId:%@ error: %@",[gltResponse getPosRefId], m.error);
+                [txState unknownCompleted:@"Unexpected error when recovering transaction status. Check EFTPOS."];
+            }
+        } else {
+            if (txState.type == SPITransactionTypeGetLastTransaction) {
+                // THIS WAS A PLAIN GET LAST TRANSACTION REQUEST, NOT FOR RECOVERY PURPOSES.
+                SPILog(@"Retrieved last transaction as asked directly by the user.");
+                [gltResponse copyMerchantReceiptToCustomerReceipt];
+                [txState completed:gltResponse.successState response:m msg:@"Last transaction retrieved"];
+            } else {
+                // TH-4A - Let's try to match the received last transaction against the current transaction
+                SPIMessageSuccessState successState = [self gltMatch:gltResponse
+                                                        expectedType:txState.type
+                                                      expectedAmount:txState.amountCents
+                                                         requestDate:txState.requestDate
+                                                            posRefId:@"_NOT_IMPL_YET"];
+                
+                if (successState == SPIMessageSuccessStateUnknown) {
+                    // TH-4N: Didn't Match our transaction. Consider Unknown State.
+                    SPILog(@"Did not match transaction.");
+                    [txState unknownCompleted:@"Failed to recover transaction status. Check EFTPOS."];
+                } else {
+                    // TH-4Y: We Matched, transaction finished, let's update ourselves
+                    [gltResponse copyMerchantReceiptToCustomerReceipt];
+                    [txState completed:successState response:m msg:@"Transaction ended."];
+                }
+            }
+            
+            [self.delegate spi:self transactionFlowStateChanged:self.state];
+        }
+    });
+    
 }
 
 - (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse
@@ -1417,7 +1459,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             
         } else if ([eventName isEqualToString:SPISignatureRequiredKey]) {
             [weakSelf handleSignatureRequired:m];
-        
+            
         } else if ([eventName isEqualToString:SPIAuthCodeRequiredKey]) {
             [weakSelf handleAuthCodeRequired:m];
             
