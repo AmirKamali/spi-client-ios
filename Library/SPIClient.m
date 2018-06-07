@@ -507,7 +507,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             [weakSelf.state.txFlowState sent:@"Asked EFTPOS to settle."];
         }
         
-        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state.copy];
+        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Settle initiated"]);
     });
 }
@@ -531,7 +531,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                 [self.state.txFlowState sent:@"Asked EFTPOS to make a settlement enquiry."];
             }
         }
-        [weakSelf.delegate spi:self transactionFlowStateChanged:weakSelf.state.copy];
+        [weakSelf.delegate spi:self transactionFlowStateChanged:weakSelf.state];
         
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Settle Initiated"]);
     });
@@ -559,7 +559,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             [weakSelf.state.txFlowState sent:@"Asked EFTPOS to get last transaction."];
         }
         
-        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state.copy];
+        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Get last transaction initiated"]);
     });
 }
@@ -912,7 +912,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [self.state.txFlowState completed:m.successState response:m msg:@"Settle transaction ended."];
     // TH-6A, TH-6E
     
-    [self.delegate spi:self transactionFlowStateChanged:self.state.copy];
+    [self.delegate spi:self transactionFlowStateChanged:self.state];
 }
 
 /**
@@ -992,7 +992,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             }
         }
         
-        [self.delegate spi:self transactionFlowStateChanged:self.state.copy];
+        [self.delegate spi:self transactionFlowStateChanged:self.state];
     }
 }
 

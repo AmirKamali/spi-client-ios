@@ -33,7 +33,7 @@
 }
 - (SPIMessage *)toMessage {
     NSDictionary *originalData = @{@"pos_ref_id": self.posRefId,
-                                   @"amount_purchase":@(self.purchaseAmount),
+                                   @"purchase_amount":@(self.purchaseAmount),
                                   @"tip_amount":@(self.tipAmount),
                                   @"cash_amount":@(self.cashoutAmount),
                                   @"prompt_for_cashout":@(self.promptForCashout)
