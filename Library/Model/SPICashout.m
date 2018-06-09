@@ -29,7 +29,7 @@
 
 @end
 
-@implementation CashoutOnlyResponse:NSObject
+@implementation SPICashoutOnlyResponse:NSObject
 
 - (instancetype)initWithMessage:(SPIMessage *)message {
     self = [super init];

@@ -17,7 +17,7 @@
 - (SPIMessage *)toMessage;
 @end
 
-@interface CashoutOnlyResponse : NSObject
+@interface SPICashoutOnlyResponse : NSObject
 @property (nonatomic, readonly) BOOL               isSuccess;
 @property (nonatomic, readonly, copy) NSString     *requestid;
 @property (nonatomic, readonly, copy) NSString     *schemeName;

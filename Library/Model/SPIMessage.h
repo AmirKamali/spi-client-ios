@@ -110,7 +110,7 @@ typedef NS_ENUM (NSInteger, SPIMessageSuccessState) {
 @property (nonatomic, copy) NSString *incomingHmac;
 
 @property (nonatomic) BOOL                     isSuccess;
-@property (nonatomic, copy, readonly) NSString *error;
+
 @property (nonatomic) SPIMessageSuccessState   successState;
 
 // Denotes whether an outgoing message needs to be encrypted in ToJson()
@@ -143,6 +143,10 @@ typedef NS_ENUM (NSInteger, SPIMessageSuccessState) {
 - (NSDictionary *)toJson;
 
 + (NSString *)successStateToString:(SPIMessageSuccessState)success;
+
+-(NSString *)getError;
+
+-(NSString *)getErrorDetail;
 
 @end
 
