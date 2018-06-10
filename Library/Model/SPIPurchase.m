@@ -73,6 +73,9 @@
 - (NSString *)getRRN {
     return [self.message getDataStringValue:@"rrn"];
 }
+- (NSString *)getMerchantReceipt {
+    return [self.message getDataStringValue:@"merchant_receipt"];
+}
 
 - (NSString *)getCustomerReceipt {
     return [self.message getDataStringValue:@"customer_receipt"];
@@ -226,14 +229,14 @@
 }
 
 - (BOOL)isWaitingForAuthCode {
-    return [[_message error] hasPrefix:@"OPERATION_IN_PROGRESS_AWAITING_PHONE_AUTH_CODE"];
+    return [self.message.error hasPrefix:@"OPERATION_IN_PROGRESS_AWAITING_PHONE_AUTH_CODE"];
 }
 
 - (BOOL)isStillInProgress:(NSString *)posRefId{
     return ([self wasOperationInProgressError] && [posRefId isEqualToString:[self getPosRefId]]);
 }
 
-- (SPIMessageSuccessState)successState{
+- (SPIMessageSuccessState)getSuccessState{
     return [_message successState];
 }
 
@@ -350,27 +353,24 @@
     
 }
 
+
+- (NSString *)getRefundAmount {
+    return [self.message getDataStringValue:@"refund_amount"];
+}
+
 - (NSString *)getRRN {
     return [self.message getDataStringValue:@"rrn"];
 }
-
+//
 - (NSString *)getCustomerReceipt {
     return [self.message getDataStringValue:@"customer_receipt"];
 }
-
+//
 - (NSString *)getMerchantReceipt {
     return [self.message getDataStringValue:@"merchant_receipt"];
 }
+//
 
-- (NSString *)getResponseText {
-    return [self.message getDataStringValue:@"host_response_text"];
-}
-
-- (NSString *)getResponseValue:(NSString *)attribute {
-    if (!attribute) return @"";
-    
-    return (NSString *)self.message.data[attribute] ?: @"";
-}
 -(NSDate *)getSettlementDate{
     NSString *dateStr = [_message getDataStringValue:@"bank_settlement_date"];
     if (dateStr.length == 0){
@@ -379,6 +379,61 @@
     return [[NSDateFormatter dateNoTimeZoneFormatter] dateFromString:dateStr];
     
 }
+- (NSString *)getResponseText {
+    return [self.message getDataStringValue:@"host_response_text"];
+}
+
+- (NSString *)GetResponseCode {
+    return [self.message getDataStringValue:@"host_response_code"];
+}
+
+- (NSString *)getTerminalReferenceId {
+    return [self.message getDataStringValue:@"terminal_ref_id"];
+}
+- (NSString *)getCardEntry {
+    return [self.message getDataStringValue:@"card_entry"];
+}
+
+- (NSString *)getAccountType {
+    return [self.message getDataStringValue:@"account_type"];
+}
+
+- (NSString *)GetAuthCode {
+    return [self.message getDataStringValue:@"auth_code"];
+}
+
+- (NSString *)getBankDate {
+    return [self.message getDataStringValue:@"bank_date"];
+}
+
+- (NSString *)getBankTime {
+    return [self.message getDataStringValue:@"bank_time"];
+}
+
+- (NSString *)getMaskedPan {
+    return [self.message getDataStringValue:@"masked_pan"];
+}
+
+- (NSString *)getTerminalId {
+    return [self.message getDataStringValue:@"terminal_id"];
+}
+
+- (BOOL)wasMerchantReceiptPrinted
+{
+    return [self.message getDataBoolValue:@"merchant_receipt_printed" defaultIfNotFound:false];
+}
+
+- (BOOL)wasCustomerReceiptPrinted {
+    return [self.message getDataBoolValue:@"customer_receipt_printed" defaultIfNotFound:false];
+}
+
+- (NSString *)getResponseValue:(NSString *)attribute {
+    if (!attribute) return @"";
+    
+    return (NSString *)self.message.data[attribute] ?: @"";
+}
+
+
 @end
 
 @interface SPISignatureRequired(){

@@ -39,8 +39,6 @@
 
 - (NSString *)getRRN;
 
-- (NSString *)getCustomerReceipt;
-
 - (NSInteger)getPurchaseAmount;
 
 - (NSInteger)getTipAmount;
@@ -51,20 +49,41 @@
 
 - (NSInteger)getBankCashAmount;
 
+- (NSString *)getCustomerReceipt;
+
+- (NSString *)getMerchantReceipt;
+
 - (NSString *)getResponseText;
+
+- (NSString *)hostResponseText;
+
+- (NSDictionary *)toPaymentSummary;
+
+- (NSDate *)getSettlementDate;
 
 - (NSString *)getResponseCode;
 
 - (NSString *)getTerminalReferenceId;
 
+- (NSString *)getCardEntry;
+
+- (NSString *)getAccountType;
+
+- (NSString *)getAuthCode;
+
+- (NSString *)getBankDate;
+
+- (NSString *)getBankTime;
+
+- (NSString *)getMaskedPan;
+
+- (NSString *)getTerminalId;
+
+- (BOOL)wasMerchantReceiptPrinted;
+
+- (BOOL)wasCustomerReceiptPrinted;
+
 - (NSString *)getResponseValueWithAttribute:(NSString *)attribute;
-
-- (NSString *)hostResponseText;
-
--(NSDictionary *)toPaymentSummary;
-
-- (NSDate *)getSettlementDate;
-
 
 @end
 
@@ -94,7 +113,7 @@
 
 - (BOOL)isStillInProgress:(NSString *) posRefId;
 
-- (SPIMessageSuccessState *)getSuccessState;
+- (SPIMessageSuccessState)getSuccessState;
 
 - (BOOL)wasSuccessfulTx;
 
@@ -141,17 +160,41 @@
 
 - (instancetype)initWithMessage:(SPIMessage *)message;
 
+- (NSString *)getRefundAmount;
+
 - (NSString *)getRRN;
 
 - (NSString *)getCustomerReceipt;
 
 - (NSString *)getMerchantReceipt;
 
+-(NSDate *)getSettlementDate;
+
 - (NSString *)getResponseText;
 
-- (NSString *)getResponseValue:(NSString *)attribute;
+- (NSString *)GetResponseCode;
 
-- (NSDate *)getSettlementDate;
+- (NSString *)getTerminalReferenceId;
+
+- (NSString *)getCardEntry;
+
+- (NSString *)getAccountType;
+
+- (NSString *)GetAuthCode;
+
+- (NSString *)getBankDate;
+
+- (NSString *)getBankTime;
+
+- (NSString *)getMaskedPan;
+
+- (NSString *)getTerminalId;
+
+- (BOOL)wasMerchantReceiptPrinted;
+
+- (BOOL)wasCustomerReceiptPrinted;
+
+- (NSString *)getResponseValue:(NSString *)attribute;
 @end
 
 @interface SPISignatureRequired : NSObject

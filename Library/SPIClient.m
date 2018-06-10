@@ -8,7 +8,6 @@
 
 #import "SPIClient.h"
 #import "SPIModels.h"
-
 #import "SPIConnection.h"
 #import "SPIWebSocketConnection.h"
 #import "SPIMessage.h"
@@ -1070,7 +1069,16 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     
     return gltResponse.successState;
 }
+- (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse
+                          posRefId:(NSString *)posRefId{
+    SPILog(@"GLT CHECK: PosRefId: %@->%@}",posRefId,[gltResponse getPosRefId]);
 
+    if (! [posRefId isEqualToString:gltResponse.getPosRefId]){
+        return SPIMessageSuccessStateUnknown;
+    }
+
+    return gltResponse.getSuccessState;
+}
 - (void)transactionMonitoring {
     __weak __typeof(& *self) weakSelf = self;
     

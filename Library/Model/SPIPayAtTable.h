@@ -9,8 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "SPIMessage.h"
 #import "SPIPurchase.h"
-#import "SPIClient.h"
 
+@class  SPIClient;
 typedef NS_ENUM (NSUInteger, SPIBillRetrievalResult) {
     BillRetrievalResultSuccess,
     BillRetrievalResultInvalidTableId,

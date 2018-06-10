@@ -27,22 +27,39 @@
 - (instancetype)initWithMessage:(SPIMessage *)message;
 
 - (NSString *)getRRN;
+
 - (NSString *)getCashoutAmount;
+
 - (NSString *)getBankNonCashAmount;
+
 - (NSString *)getBankCashAmount;
+
 - (NSString *)getCustomerReceipt;
+
 - (NSString *)getMerchantReceipt;
+
 - (NSString *)getResponseText;
+
 - (NSString *)getResponseCode;
+
 - (NSString *)getTerminalReferenceId;
+
 - (NSString *)getAccountType;
+
 - (NSString *)getAuthCode;
+
 - (NSString *)getBankDate;
+
 - (NSString *)getBankTime;
+
 - (NSString *)getMaskedPan;
+
 - (NSString *)getTerminalId;
+
 - (BOOL)wasMerchantReceiptPrinted;
+
 - (BOOL)wasCustomerReceiptPrinted;
+
 - (NSString *)getResponseValue:(NSString *)attribute;
 
 

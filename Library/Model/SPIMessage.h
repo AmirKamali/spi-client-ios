@@ -95,6 +95,9 @@ typedef NS_ENUM (NSInteger, SPIMessageSuccessState) {
 
 @property (nonatomic, readonly, copy) NSString                    *mid;
 @property (nonatomic, readonly, copy) NSString                    *eventName;
+@property (nonatomic, readonly, copy) NSString                    *error;
+@property (nonatomic, readonly, copy) NSString                    *errorDetail;
+
 @property (nonatomic, copy) NSDictionary <NSString *, NSObject *> *data;
 
 //Changed when toJson called
@@ -143,10 +146,6 @@ typedef NS_ENUM (NSInteger, SPIMessageSuccessState) {
 - (NSDictionary *)toJson;
 
 + (NSString *)successStateToString:(SPIMessageSuccessState)success;
-
--(NSString *)getError;
-
--(NSString *)getErrorDetail;
 
 @end
 

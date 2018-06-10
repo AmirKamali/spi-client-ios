@@ -19,6 +19,22 @@
 
 @end
 
+@interface SPISchemeSettlementEntry : NSObject
+
+@property (nonatomic, readonly, copy) NSString *schemeName;
+@property (nonatomic) bool settleByAcquirer;
+@property (nonatomic) NSInteger totalCount;
+@property (nonatomic) NSInteger totalValue;
+- (instancetype)initWithSchemeName:(NSString *)schemeName
+                  settleByAcquirer:(BOOL)settleByAcquirer
+                        totalCount:(int)totalCount
+                        totalValue:(int)totalValue;
+
+- (instancetype)initWithData:(NSDictionary *)dictionary;
+
+@end
+
+
 @interface SPISettlement : NSObject
 @property (nonatomic, readonly, copy) NSString     *requestId;
 @property (nonatomic, readonly, assign) BOOL       isSuccess;

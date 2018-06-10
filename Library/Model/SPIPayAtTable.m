@@ -9,7 +9,7 @@
 #import "SPIPayAtTable.h"
 #import "NSString+Util.h"
 #import "SPILogger.h"
-
+#import "SPIClient.h"
 @implementation SPIBillStatusResponse
 - (NSArray<SPIPaymentHistoryEntry *> *)getBillPaymentHistory{
     if (_billData == nil || [_billData isEqualToString:@""]){

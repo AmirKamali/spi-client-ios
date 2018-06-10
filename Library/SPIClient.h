@@ -7,15 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
-
 #import "SPIPurchase.h"
 #import "SPISettlement.h"
 #import "SPIConnection.h"
 #import "SPIModels.h"
 
+
 @class SPIClient;
 @class SPIPreAuth;
 @class SPIPayAtTable;
+
 @interface SPIConfig:NSObject
 @property (nonatomic) BOOL promptForCustomerCopyOnEftpos;
 @property (nonatomic) BOOL signatureFlowOnEftpos;
@@ -266,6 +267,8 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
                        requestDate:(NSDate *)requestDate
                           posRefId:(NSString *)posRefId;
 
+- (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse
+                          posRefId:(NSString *)posRefId;
 - (BOOL)send:(SPIMessage *)message;
 
 -(SPIPayAtTable *)enablePayAtTable;

@@ -31,4 +31,11 @@
  */
 + (NSDateFormatter *)bankSettleMentFormat;
 
+/**
+ * Formats date time string in custom format
+ *
+ * @return NSDateFormatter
+ */
++ (NSDateFormatter *)dateFormaterWithFormat:(NSString *)format;
+
 @end

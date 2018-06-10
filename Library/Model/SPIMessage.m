@@ -120,11 +120,11 @@ NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomi
     return [self getDataBoolValue:@"success" defaultIfNotFound:false];
 }
 
-- (NSString *)getError {
+- (NSString *)error {
     return [self getDataStringValue:@"error_detail"];
 }
 
--(NSString *)getErrorDetail {
+-(NSString *)errorDetail {
     return [self getDataStringValue:@"error_reason"];
 }
 

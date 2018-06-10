@@ -9,6 +9,7 @@
 #import "SPISettlement.h"
 #import "SPIMessage.h"
 #import "SPIRequestIdHelper.h"
+#import "NSDateFormatter+Util.h"
 
 @implementation SPISettleRequest
 
@@ -28,6 +29,22 @@
 }
 
 @end
+@implementation SPISchemeSettlementEntry
+- (instancetype)initWithSchemeName:(NSString *)schemeName settleByAcquirer:(BOOL)settleByAcquirer totalCount:(int)totalCount totalValue:(int)totalValue{
+    _schemeName = schemeName;
+    _settleByAcquirer = settleByAcquirer;
+    _totalCount = totalCount;
+    _totalValue = totalValue;
+    return self;
+}
+- (instancetype)initWithData:(NSDictionary *)dictionary{
+    _schemeName = [dictionary valueForKey:@"scheme_name"];
+    _settleByAcquirer = [[[dictionary valueForKey:@"scheme_name"] lowercaseString] isEqualToString:@"yes"];
+    _totalValue = [NSNumber numberWithInteger:(int)[dictionary valueForKey:@"total_value"]].integerValue;
+    _totalCount = [NSNumber numberWithInteger:(int)[dictionary valueForKey:@"total_count"]].integerValue;
+    return self;
+}
+@end
 
 @implementation SPISettlement
 
@@ -43,12 +60,68 @@
     return self;
 }
 
+
+
+- (NSString *)getSettleByAcquirerCount {
+    return [self.message getDataStringValue:@"accumulated_settle_by_acquirer_count"];
+}
+
+- (NSString *)getSettleByAcquirerValue {
+    return [self.message getDataStringValue:@"accumulated_settle_by_acquirer_value"];
+}
+
+- (NSString *)getTotalCount {
+    return [self.message getDataStringValue:@"accumulated_total_count"];
+}
+
+- (NSString *)getTotalValue {
+    return [self.message getDataStringValue:@"accumulated_total_value"];
+}
+
+- (NSDate *)getPeriodStartTime {
+    NSString * timeStr = [self.message getDataStringValue:@"settlement_period_start_time"]; // "05:00"
+    NSString * dateStr = [self.message getDataStringValue:@"settlement_period_start_date"]; // "05Oct17"
+    return [[NSDateFormatter dateFormaterWithFormat:@"HH:mmddMMMyy"] dateFromString:[NSString stringWithFormat:@"%@%@",timeStr,dateStr]];
+}
+
+- (NSDate *)getPeriodEndTime {
+    NSString * timeStr = [self.message getDataStringValue:@"settlement_period_end_time"]; // "05:00"
+    NSString * dateStr = [self.message getDataStringValue:@"settlement_period_end_date"]; // "05Oct17"
+    return [[NSDateFormatter dateFormaterWithFormat:@"HH:mmddMMMyy"] dateFromString:[NSString stringWithFormat:@"%@%@",timeStr,dateStr]];
+}
+
+- (NSDate *)getTriggeredTime {
+    
+    NSString * timeStr = [self.message getDataStringValue:@"settlement_triggered_time"]; // "05:00"
+    NSString * dateStr = [self.message getDataStringValue:@"settlement_triggered_date"]; // "05Oct17"
+    return [[NSDateFormatter dateFormaterWithFormat:@"HH:mm:ssddMMMyy"] dateFromString:[NSString stringWithFormat:@"%@%@",timeStr,dateStr]];
+}
+
 - (NSString *)getResponseText {
     return [self.message getDataStringValue:@"host_response_text"];
 }
 
 - (NSString *)getReceipt {
     return [self.message getDataStringValue:@"merchant_receipt"];
+}
+
+- (NSString *)GetTransactionRange {
+    return [self.message getDataStringValue:@"transaction_range"];
+}
+
+- (NSString *)GetTerminalId {
+    return [self.message getDataStringValue:@"terminal_id"];
+}
+
+-(NSArray<SPISchemeSettlementEntry *>*)getSchemeSettlementEntries{
+
+    NSArray *schemes = [_message getDataArrayValue:@"schemes"];
+    NSMutableArray<SPISchemeSettlementEntry *> *entries = [[NSMutableArray alloc] init];
+    for (NSDictionary *item in schemes) {
+        SPISchemeSettlementEntry *entry = [[SPISchemeSettlementEntry alloc] initWithData:item];
+        [entries addObject:entry];
+    }
+    return entries;
 }
 
 @end
