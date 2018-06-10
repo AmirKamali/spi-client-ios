@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "SPIClient.h"
+
 @interface CashoutOnlyRequest : NSObject
 - (id)init:(NSInteger)amountCents posRefId:(NSString *)posRefId;
 

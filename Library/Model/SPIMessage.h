@@ -157,19 +157,23 @@ typedef NS_ENUM (NSInteger, SPIMessageSuccessState) {
  */
 @interface SPIMessageEnvelope : NSObject
 
-// The Message field is set only when in Un-encrypted form.
-// In fact it is the only field in an envelope in the Un-Encrypted form.
+/* The Message field is set only when in Un-encrypted form.
+ * In fact it is the only field in an envelope in the Un-Encrypted form.
+ */
 @property (nonatomic, strong) SPIMessage *message;
 
-// The enc field is set only when in Encrypted form.
-// It contains the encrypted Json of another MessageEnvelope
+/** The enc field is set only when in Encrypted form.
+ * It contains the encrypted Json of another MessageEnvelope
+ */
 @property (nonatomic, copy) NSString *enc;
 
-// The hmac field is set only when in Encrypted form.
-// It is the signature of the "enc" field.
+/** The hmac field is set only when in Encrypted form.
+ *  It is the signature of the "enc" field.
+ */
 @property (nonatomic, copy) NSString *hmac;
 
-// The pos_id field is only filled for outgoing Encrypted messages.
+
+ ///The pos_id field is only filled for outgoing Encrypted messages.
 @property (nonatomic, copy) NSString *posId;
 
 - (instancetype)initWithMessage:(SPIMessage *)message
