@@ -217,7 +217,7 @@
     // So we check if we got back an ResponseCode.
     // (as opposed to say an operation_in_progress_error)
     NSString *code = [self getResponseCode];
-    return code == nil || code.length == 0;
+    return !(code == nil || code.length == 0);
 }
 
 - (BOOL)wasOperationInProgressError {

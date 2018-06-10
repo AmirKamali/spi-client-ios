@@ -131,14 +131,14 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         NSLog(@"setup with secrets");
         
         self.state.status = SPIStatusPairedConnecting;
-        [self.delegate spi:self statusChanged:self.state.copy];
+        [self.delegate spi:self statusChanged:self.state];
         [self connect];
         return NO;
     } else {
         NSLog(@"setup with NO secrets");
         
         self.state.status = SPIStatusUnpaired;
-        [self.delegate spi:self statusChanged:self.state.copy];
+        [self.delegate spi:self statusChanged:self.state];
         return YES;
     }
 }
@@ -169,16 +169,16 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     
     dispatch_async(self.queue, ^{
         if (self.state.flow == SPIFlowIdle){
-            return completion(YES, self.state.copy); // already idle
+            return completion(YES, self.state); // already idle
         }
         
         if (self.state.flow == SPIFlowPairing && self.state.pairingFlowState.isFinished) {
             self.state.flow = SPIFlowIdle;
-            return completion(YES, self.state.copy);
+            return completion(YES, self.state);
         }
         if (self.state.flow == SPIFlowTransaction && self.state.txFlowState.isFinished) {
             self.state.flow = SPIFlowIdle;
-            return completion(YES, self.state.copy);
+            return completion(YES, self.state);
         }
         
         completion(NO, self.state.copy);
@@ -204,7 +204,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         weakSelf.state.flow = SPIFlowPairing;
         weakSelf.state.pairingFlowState = currentPairingFlowState;
         
-        [weakSelf.delegate spi:weakSelf pairingFlowStateChanged:weakSelf.state.copy];
+        [weakSelf.delegate spi:weakSelf pairingFlowStateChanged:weakSelf.state];
         [weakSelf.connection connect];
     });
     
@@ -225,7 +225,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     if (weakSelf.state.pairingFlowState.isAwaitingCheckFromEftpos) {
         // But we are still waiting for confirmation from EFTPOS side.
         weakSelf.state.pairingFlowState.message = [NSString stringWithFormat:@"Click YES on EFTPOS if code is: %@", weakSelf.state.pairingFlowState.confirmationCode];
-        [weakSelf.delegate spi:weakSelf pairingFlowStateChanged:weakSelf.state.copy];
+        [weakSelf.delegate spi:weakSelf pairingFlowStateChanged:weakSelf.state];
     } else {
         NSLog(@"pairedReady");
         // Already confirmed from EFTPOS - So all good now. We're Paired also from the POS perspective.
@@ -259,7 +259,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         weakSelf.state.status = SPIStatusUnpaired;
         weakSelf.state.pairingFlowState = nil;
         weakSelf.state.txFlowState = nil;
-        [weakSelf.delegate spi:self statusChanged:weakSelf.state.copy];
+        [weakSelf.delegate spi:self statusChanged:weakSelf.state];
         
         [weakSelf.connection disconnect];
         weakSelf.secrets = nil;
@@ -299,7 +299,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Purchase initiated"]);
         
-        [weakSelf.delegate spi:self transactionFlowStateChanged:weakSelf.state.copy];
+        [weakSelf.delegate spi:self transactionFlowStateChanged:weakSelf.state];
     });
 }
 - (void)initiatePurchaseTx:(NSString *)posRefId purchaseAmount:(int)purchaseAmount tipAmount:(int)tipAmount cashoutAmount:(int)cashoutAmount promptForCashout:(bool)promptForCashout  completion:(SPICompletionTxResult)completion {
@@ -385,7 +385,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             [weakSelf.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS to refund $%.2f", amountCents / 100.0]];
         }
         
-        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state.copy];
+        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Refund initiated"]);
     });
 }
@@ -410,7 +410,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         
         [weakSelf send:msg];
         
-        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state.copy];
+        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
         
     });
 }
@@ -505,7 +505,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             [weakSelf.state.txFlowState failed:nil msg:@"Transaction cancelled. Request had not even been sent yet."];
         }
         
-        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state.copy];
+        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
     });
 }
 
@@ -687,7 +687,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     SPILog(@"handleKeyRequest");
     
     self.state.pairingFlowState.message = @"Negotiating pairing...";
-    [self.delegate spi:self pairingFlowStateChanged:self.state.copy];
+    [self.delegate spi:self pairingFlowStateChanged:self.state];
     
     // Use the helper. It takes the incoming request, and generates the secrets and the response.
     SPISecretsAndKeyResponse *result = [SPIPairingHelper generateSecretsAndKeyResponseForKeyRequest:[[SPIKeyRequest alloc] initWithMessage:m]];
@@ -710,7 +710,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     self.state.pairingFlowState.isAwaitingCheckFromEftpos = YES;
     self.state.pairingFlowState.isAwaitingCheckFromPos    = YES;
     self.state.pairingFlowState.message                   = [NSString stringWithFormat:@"Confirm that the following Code:\n\n%@\n\n is showing on the terminal", keyCheck.confirmationCode];
-    [self.delegate spi:self pairingFlowStateChanged:self.state.copy];
+    [self.delegate spi:self pairingFlowStateChanged:self.state];
 }
 
 /**
@@ -729,7 +729,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             SPILog(@"Got Pair Confirm from Eftpos, but still waiting for use to confirm from POS.");
             // Still Waiting for User to say yes on POS
             self.state.pairingFlowState.message = [NSString stringWithFormat:@"Confirm that the following Code:\n\n%@\n\n is what the EFTPOS showed", self.state.pairingFlowState.confirmationCode];
-            [self.delegate spi:self pairingFlowStateChanged:self.state.copy];
+            [self.delegate spi:self pairingFlowStateChanged:self.state];
         } else {
             SPILog(@"Got Pair Confirm from Eftpos, and already had confirm from POS. Now just waiting for first pong.");
             [self onPairingSuccess];
@@ -916,7 +916,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [self.state.txFlowState completed:m.successState response:m msg:@"Refund transaction ended."];
     // TH-6A, TH-6E
     
-    [self.delegate spi:self transactionFlowStateChanged:self.state.copy];
+    [self.delegate spi:self transactionFlowStateChanged:self.state];
 }
 
 /**
@@ -1031,7 +1031,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                 }
             }
             
-            [self.delegate spi:self transactionFlowStateChanged:self.state];
+            [self.delegate spi:self transactionFlowStateChanged:self.state.copy];
         }
     });
     
@@ -1110,7 +1110,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         }
         
         if (needsPublishing) {
-            [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state.copy];
+            [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
         }
     });
 }
@@ -1146,7 +1146,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                 
                 if (weakSelf.state.flow == SPIFlowPairing) {
                     weakSelf.state.pairingFlowState.message = @"Requesting to pair...";
-                    [weakSelf.delegate spi:weakSelf pairingFlowStateChanged:weakSelf.state.copy];
+                    [weakSelf.delegate spi:weakSelf pairingFlowStateChanged:weakSelf.state];
                     SPIPairingRequest *pr = [SPIPairingHelper newPairRequest];
                     [weakSelf send:[pr toMessage]];
                 } else {
@@ -1179,7 +1179,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                     
                     
                     
-                    //[weakSelf.delegate spi:weakSelf statusChanged:weakSelf.state.copy];
+                    //[weakSelf.delegate spi:weakSelf statusChanged:weakSelf.state];
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                         if (weakSelf.connection == nil) {return ;}
                         SPILog(@"Will try to reconnect soon...");
@@ -1204,7 +1204,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                     SPILog(@"Lost connection during pairing.");
                     weakSelf.state.pairingFlowState.message = @"Could not connect to pair. Check network/EFTPOS and try again...";
                     [weakSelf onPairingFailed];
-                    [self.delegate spi:self pairingFlowStateChanged:self.state.copy];
+                    [self.delegate spi:self pairingFlowStateChanged:self.state];
                 }
                 
                 break;
@@ -1314,7 +1314,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                 // TH-3AR - We had not even sent the request yet. Let's do that now
                 [self send:self.state.txFlowState.request];
                 [self.state.txFlowState sent:@"Sending Request Now..."];
-                [self.delegate spi:self transactionFlowStateChanged:self.state.copy];
+                [self.delegate spi:self transactionFlowStateChanged:self.state];
             }
         } else {
             [weakSelf.spiPat PushPayAtTableConfig];

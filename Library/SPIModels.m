@@ -68,8 +68,8 @@
     self = [super init];
     
     if (self) {
-        self.tid                      = posRefId;
-        self.posRefId                 = posRefId;
+        self.tid                      = posRefId.copy;
+        self.posRefId                 = posRefId.copy;
         self.type                     = type;
         self.amountCents              = amountCents;
         self.isRequestSent            = NO;
@@ -177,6 +177,7 @@
 - (id)copyWithZone:(NSZone *)zone {
     SPITransactionFlowState *state = [SPITransactionFlowState new];
     state.tid                      = self.tid;
+    state.posRefId                 = self.posRefId;
     state.type                     = self.type;
     state.displayMessage           = self.displayMessage;
     state.amountCents              = self.amountCents;
