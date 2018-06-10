@@ -42,9 +42,29 @@
 
 - (instancetype)initWithMessage:(SPIMessage *)message;
 
+- (NSInteger)getSettleByAcquirerCount;
+
+- (NSInteger)getSettleByAcquirerValue;
+
+- (NSInteger)getTotalCount;
+
+- (NSInteger)getTotalValue;
+
+- (NSDate *)getPeriodStartTime;
+
+- (NSDate *)getPeriodEndTime;
+
+- (NSDate *)getTriggeredTime;
+
 - (NSString *)getResponseText;
 
 - (NSString *)getReceipt;
+
+- (NSString *)getTransactionRange;
+
+- (NSString *)getTerminalId;
+
+- (NSArray<SPISchemeSettlementEntry *>*)getSchemeSettlementEntries;
 
 @end
 @interface SPISettlementEnquiryRequest:NSObject

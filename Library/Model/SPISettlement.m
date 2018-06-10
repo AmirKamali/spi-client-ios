@@ -62,20 +62,20 @@
 
 
 
-- (NSString *)getSettleByAcquirerCount {
-    return [self.message getDataStringValue:@"accumulated_settle_by_acquirer_count"];
+- (NSInteger)getSettleByAcquirerCount {
+    return [self.message getDataIntegerValue:@"accumulated_settle_by_acquirer_count"];
 }
 
-- (NSString *)getSettleByAcquirerValue {
-    return [self.message getDataStringValue:@"accumulated_settle_by_acquirer_value"];
+- (NSInteger)getSettleByAcquirerValue {
+    return [self.message getDataIntegerValue:@"accumulated_settle_by_acquirer_value"];
 }
 
-- (NSString *)getTotalCount {
-    return [self.message getDataStringValue:@"accumulated_total_count"];
+- (NSInteger)getTotalCount {
+    return [self.message getDataIntegerValue:@"accumulated_total_count"];
 }
 
-- (NSString *)getTotalValue {
-    return [self.message getDataStringValue:@"accumulated_total_value"];
+- (NSInteger)getTotalValue {
+    return [self.message getDataIntegerValue:@"accumulated_total_value"];
 }
 
 - (NSDate *)getPeriodStartTime {
@@ -105,11 +105,11 @@
     return [self.message getDataStringValue:@"merchant_receipt"];
 }
 
-- (NSString *)GetTransactionRange {
+- (NSString *)getTransactionRange {
     return [self.message getDataStringValue:@"transaction_range"];
 }
 
-- (NSString *)GetTerminalId {
+- (NSString *)getTerminalId {
     return [self.message getDataStringValue:@"terminal_id"];
 }
 
