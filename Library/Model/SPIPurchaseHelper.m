@@ -12,6 +12,7 @@
 +(SPIPurchaseRequest *) createPurchaseRequest:(NSInteger)amountCents purchaseId:(NSString *)purchaseId{
     return [[SPIPurchaseRequest alloc] initWithAmountCents:amountCents posRefId:purchaseId];
 }
+
 +(SPIPurchaseRequest *) createPurchaseRequestV2:(NSString *)posRefId purchaseAmount:(NSInteger)purchaseAmount tipAmount:(NSInteger)tipAmount cashAmount:(NSInteger)cashAmount promptForCashout:(BOOL)promptForCashout{
     SPIPurchaseRequest *request = [[SPIPurchaseRequest alloc] initWithAmountCents:purchaseAmount posRefId:posRefId];
     request.cashoutAmount = cashAmount;

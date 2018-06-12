@@ -348,7 +348,9 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
         }
         weakSelf.state.flow = SPIFlowTransaction;
+        
         SPIPurchaseRequest *purchase = [SPIPurchaseHelper createPurchaseRequestV2:posRefId purchaseAmount:purchaseAmount tipAmount:tipAmount cashAmount:cashoutAmount promptForCashout:promptForCashout];
+        purchase.config = weakSelf.config;
         SPIMessage *purchaseMsg = [purchase toMessage];
         
         weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId type:SPITransactionTypePurchase amountCents:purchaseAmount message:purchaseMsg msg:[NSString stringWithFormat:@"Waiting for EFTPOS connection to make payment request. %@",[purchase amountSummary]]];
@@ -357,7 +359,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         }
         
     });
-    [weakSelf.delegate spi:self transactionFlowStateChanged:_state];
+    [weakSelf.delegate spi:self transactionFlowStateChanged:_state.copy];
     completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Purchase Initiated"]);
 }
 
@@ -887,7 +889,12 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     NSLog(@"handlePurchaseResponse");
     
     if (self.state.flow != SPIFlowTransaction || self.state.txFlowState.isFinished) {
-        SPILog(@"Received purchase response but I was not waiting for one. %@", m.decryptedJson);
+        NSString *msg = [NSString stringWithFormat:@"Received purchase response but I was not waiting for one. %@", m.decryptedJson];
+        
+        //FIX ME: State does not go back
+        //[self.state.txFlowState failed:m msg:msg];
+        //[self.delegate spi:self transactionFlowStateChanged:self.state];
+        SPILog(msg);
         return;
     }
     
@@ -896,7 +903,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [self.state.txFlowState completed:m.successState response:m msg:@"Purchase transaction ended."];
     // TH-6A, TH-6E
     
-    [self.delegate spi:self transactionFlowStateChanged:self.state];
+    [self.delegate spi:self transactionFlowStateChanged:self.state.copy];
 }
 
 /**
@@ -1507,15 +1514,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             
         } else if ([eventName isEqualToString:SPIEventError]) {
             SPILog(@"ERROR!!: '%@', %@", m.eventName, m.data);
-            
-            // One reason for error is eftpos was unpaired, but pos is using old secrets
-            // in this case maybe the delegate could reset the secret and try pairing?
-            //
-            // ie.
-            // socket WebSocket closed [1005], (null), wasClean=1
-            // "error_detail" = "Missing event";
-            // "error_reason" = "MISSING_ARGUMENTS";
-            // success = 0;
+            [weakSelf handleErrorEvent:m];
             
         } else {
             SPILog(@"I don't understand event:'%@', %@. Perhaps I have not implemented it yet.", m.eventName, m.data);

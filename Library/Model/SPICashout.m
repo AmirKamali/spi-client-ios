@@ -66,7 +66,6 @@
 - (NSString *)getResponseText{
     return [self.message getDataStringValue:@"host_response_text"];
 }
-
 - (NSString *)getResponseCode{
     return [self.message getDataStringValue:@"host_response_code"];
 }

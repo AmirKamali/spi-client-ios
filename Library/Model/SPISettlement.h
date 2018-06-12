@@ -25,6 +25,7 @@
 @property (nonatomic) bool settleByAcquirer;
 @property (nonatomic) NSInteger totalCount;
 @property (nonatomic) NSInteger totalValue;
+
 - (instancetype)initWithSchemeName:(NSString *)schemeName
                   settleByAcquirer:(BOOL)settleByAcquirer
                         totalCount:(int)totalCount
@@ -69,6 +70,8 @@
 @end
 @interface SPISettlementEnquiryRequest:NSObject
 @property (nonatomic, readonly, copy) NSString     *requestId;
+
 - (instancetype)initWithRequestId:(NSString *)requestId;
+
 - (SPIMessage *)toMessage;
 @end

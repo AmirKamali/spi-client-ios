@@ -18,8 +18,10 @@
 @class SPIPayAtTable;
 
 @interface SPIConfig:NSObject
+
 @property (nonatomic) BOOL promptForCustomerCopyOnEftpos;
 @property (nonatomic) BOOL signatureFlowOnEftpos;
+
 -(void)addReceiptConfig:(NSMutableDictionary*) data;
 
 @end
