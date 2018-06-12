@@ -19,4 +19,5 @@
 
 /*Check for empty strings */
 + (BOOL)isNilOrEmpty:(NSString *)str;
+
 @end

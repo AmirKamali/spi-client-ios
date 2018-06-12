@@ -103,6 +103,7 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 
 - (instancetype)initWithValidFormat:(BOOL)isValidFormat
                                 msg:(NSString *)message;
+
 @end
 
 /**
@@ -199,6 +200,7 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 - (void)completed:(SPIMessageSuccessState)state response:(SPIMessage *)response msg:(NSString *)msg;
 
 - (void)unknownCompleted:(NSString *)msg;
+
 @end
 
 /**

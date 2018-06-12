@@ -9,7 +9,9 @@
 #import "SPIGCDTimer.h"
 
 @interface SPIGCDTimer ()
+
 @property (nonatomic, strong, readonly) dispatch_source_t timer;
+
 @end
 
 @implementation SPIGCDTimer

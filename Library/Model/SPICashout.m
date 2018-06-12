@@ -11,7 +11,7 @@
 
 @implementation CashoutOnlyRequest:NSObject
 
-- (id)init:(NSInteger)amountCents posRefId:(NSString *)posRefId{
+- (instancetype)initWithAmountCents:(NSInteger)amountCents posRefId:(NSString *)posRefId{
     _config = [[SPIConfig alloc] init];
     _cashoutAmount = amountCents;
     _posRefId = posRefId;

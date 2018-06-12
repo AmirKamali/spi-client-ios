@@ -217,7 +217,9 @@
 - (instancetype)initWithPosRefId:(NSString *)posRefId
                        requestId:(NSString *)requestId
                        receiptToSign:(NSString *)receiptToSign;
+
 - (NSString *)getMerchantReceipt;
+
 @end
 
 @interface SPISignatureDecline : NSObject
@@ -233,9 +235,11 @@
 @interface SPISignatureAccept : NSObject
 
 @property (nonatomic, readonly, copy) NSString *signatureRequiredRequestId;
+
 - (instancetype)initWithSignatureRequiredRequestId:(NSString *)signatureRequiredRequestId;
 
 - (SPIMessage *)toMessage;
+
 @end
 
 @interface SPIMotoPurchaseRequest:NSObject

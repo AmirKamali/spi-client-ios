@@ -192,6 +192,7 @@
 @end
 
 @implementation SPICancelTransactionRequest : NSObject
+
 - (SPIMessage *)toMessage {
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"ctx"]
                                        eventName:SPICancelTransactionRequestKey

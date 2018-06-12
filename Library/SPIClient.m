@@ -433,7 +433,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         if (weakSelf.state.flow != SPIFlowIdle){
             return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not Idle"]);
         }
-        CashoutOnlyRequest *cashoutOnlyRequest = [[CashoutOnlyRequest alloc] init:amountCents posRefId:posRefId];
+        CashoutOnlyRequest *cashoutOnlyRequest = [[CashoutOnlyRequest alloc] initWithAmountCents:amountCents posRefId:posRefId];
         cashoutOnlyRequest.config = weakSelf.config;
         SPIMessage *cashoutMsg = [cashoutOnlyRequest toMessage];
         weakSelf.state.flow = SPIFlowTransaction;

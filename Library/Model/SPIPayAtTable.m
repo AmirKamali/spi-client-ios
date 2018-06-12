@@ -96,7 +96,9 @@
 @end
 
 @interface SPIBillPayment()
+
    @property (nonatomic,retain) SPIMessage* incomingAdvice;
+
 @end
 
 @implementation SPIBillPayment

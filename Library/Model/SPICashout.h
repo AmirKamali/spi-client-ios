@@ -10,13 +10,13 @@
 #import "SPIClient.h"
 
 @interface CashoutOnlyRequest : NSObject
-- (id)init:(NSInteger)amountCents posRefId:(NSString *)posRefId;
-
 @property (nonatomic, readonly) NSInteger          cashoutAmount;
 @property (nonatomic, readonly, copy) NSString     *posRefId;
 @property(nonatomic,retain)  SPIConfig *config;
 
 - (SPIMessage *)toMessage;
+
+- (instancetype)initWithAmountCents:(NSInteger)amountCents posRefId:(NSString *)posRefId;
 
 @end
 
