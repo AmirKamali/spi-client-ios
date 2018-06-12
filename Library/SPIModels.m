@@ -48,6 +48,7 @@
 }
 
 @end
+
 @implementation SPISubmitAuthCodeResult
 - (instancetype)initWithValidFormat:(BOOL)isValidFormat
                                 msg:(NSString *)message{
@@ -82,6 +83,7 @@
     
     return self;
 }
+
 - (NSString *)txTypeString {
     switch (self.type) {
         case SPITransactionTypePurchase:
@@ -112,6 +114,7 @@
             break;
     }
 }
+
 - (void)sent:(NSString *)msg {
     self.isRequestSent        = YES;
     self.requestDate          = [NSDate date];
@@ -196,12 +199,14 @@
     
     return state;
 }
+
 - (void)phoneForAuthRequired:(SPIPhoneForAuthRequired *) spiMessage msg:(NSString *)msg{
     _phoneForAuthRequiredMessage = spiMessage;
     _isAwaitingGltResponse    = true;
     _isAwaitingPhoneForAuth   = true;
     _displayMessage = msg;
 }
+
 - (void)authCodeSent:(NSString *) msg{
     _isAwaitingPhoneForAuth = false;
     _displayMessage = msg;

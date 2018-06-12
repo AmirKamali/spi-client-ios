@@ -104,6 +104,7 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 - (instancetype)initWithValidFormat:(BOOL)isValidFormat
                                 msg:(NSString *)message;
 @end
+
 /**
  * Represents the State during a TransactionFlow
  */

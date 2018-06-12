@@ -12,12 +12,16 @@
     dispatch_queue_t _queue;
     SPIClient *_client;
 }
+
 @end
+
 @implementation SPIPreAuth
+
 - (instancetype)init:(SPIClient *)client queue:(dispatch_queue_t)queue{
     _client = client;
     _queue = queue;
     
     return self;
 }
+
 @end

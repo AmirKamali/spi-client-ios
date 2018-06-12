@@ -24,11 +24,16 @@ typedef NS_ENUM (NSUInteger, SPIPaymentType) {
 
 
 @interface SPIPaymentHistoryEntry:NSObject
+
 @property (nonatomic,retain) NSString* paymentType;
 @property (nonatomic,retain) NSDictionary* paymentSummary;
-- init:(NSDictionary *) fromJson;
+
+- (instancetype)initWithDictionary:(NSDictionary *)data;
+
 - (NSDictionary *)toJsonObject;
+
 - (NSString *)getTerminalRefId;
+
 @end
 
 /**
@@ -108,6 +113,7 @@ typedef NS_ENUM (NSUInteger, SPIPaymentType) {
 - (SPIBillStatusResponse *)PayAtTableBillPaymentReceived:(SPIBillPayment *)billPayment updatedBillData:(NSString *)updatedBillData;
 
 @end
+
 @interface SPIPayAtTable:NSObject
 @property (nonatomic,readonly,copy) SPIPayAtTableConfig *config;
 @property (nonatomic, weak) id <SPIPayAtTableDelegate> delegate;

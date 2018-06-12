@@ -29,6 +29,7 @@
 }
 
 @end
+
 @implementation SPISchemeSettlementEntry
 - (instancetype)initWithSchemeName:(NSString *)schemeName settleByAcquirer:(BOOL)settleByAcquirer totalCount:(int)totalCount totalValue:(int)totalValue{
     _schemeName = schemeName;
@@ -37,6 +38,7 @@
     _totalValue = totalValue;
     return self;
 }
+
 - (instancetype)initWithData:(NSDictionary *)dictionary{
     _schemeName = [dictionary valueForKey:@"scheme_name"];
     _settleByAcquirer = [[[dictionary valueForKey:@"scheme_name"] lowercaseString] isEqualToString:@"yes"];
@@ -44,6 +46,7 @@
     _totalCount = [NSNumber numberWithInteger:(int)[dictionary valueForKey:@"total_count"]].integerValue;
     return self;
 }
+
 @end
 
 @implementation SPISettlement
@@ -127,11 +130,14 @@
 @end
 
 @implementation SPISettlementEnquiryRequest
+
 - (instancetype)initWithRequestId:(NSString *)requestId{
     _requestId = requestId;
     return self;
 }
+
 - (SPIMessage *)toMessage{
     return [[SPIMessage alloc] initWithMessageId:_requestId eventName:SPISettlementEnquiryRequestKey data:nil needsEncryption:true];
 }
+
 @end

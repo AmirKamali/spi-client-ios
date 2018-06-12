@@ -21,8 +21,6 @@
 		273E9AEC205A30EC0006ED5C /* SPIDiffieHellman.h in Headers */ = {isa = PBXBuildFile; fileRef = 273E9AE6205A30EC0006ED5C /* SPIDiffieHellman.h */; };
 		273E9AFE205A30F90006ED5C /* SPISettlement.h in Headers */ = {isa = PBXBuildFile; fileRef = 273E9AEE205A30F90006ED5C /* SPISettlement.h */; };
 		273E9AFF205A30F90006ED5C /* SPIPairing.h in Headers */ = {isa = PBXBuildFile; fileRef = 273E9AEF205A30F90006ED5C /* SPIPairing.h */; };
-		273E9B00205A30F90006ED5C /* SPILogin.m in Sources */ = {isa = PBXBuildFile; fileRef = 273E9AF0205A30F90006ED5C /* SPILogin.m */; };
-		273E9B01205A30F90006ED5C /* SPILogin.m in Sources */ = {isa = PBXBuildFile; fileRef = 273E9AF0205A30F90006ED5C /* SPILogin.m */; };
 		273E9B02205A30F90006ED5C /* SPIKeyRollingHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 273E9AF1205A30F90006ED5C /* SPIKeyRollingHelper.h */; };
 		273E9B03205A30F90006ED5C /* SPIMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 273E9AF2205A30F90006ED5C /* SPIMessage.m */; };
 		273E9B04205A30F90006ED5C /* SPIMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 273E9AF2205A30F90006ED5C /* SPIMessage.m */; };
@@ -36,7 +34,6 @@
 		273E9B0C205A30F90006ED5C /* SPISettlement.m in Sources */ = {isa = PBXBuildFile; fileRef = 273E9AF7205A30F90006ED5C /* SPISettlement.m */; };
 		273E9B0D205A30F90006ED5C /* SPIKeyRollingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 273E9AF8205A30F90006ED5C /* SPIKeyRollingHelper.m */; };
 		273E9B0E205A30F90006ED5C /* SPIKeyRollingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 273E9AF8205A30F90006ED5C /* SPIKeyRollingHelper.m */; };
-		273E9B0F205A30F90006ED5C /* SPILogin.h in Headers */ = {isa = PBXBuildFile; fileRef = 273E9AF9205A30F90006ED5C /* SPILogin.h */; };
 		273E9B10205A30F90006ED5C /* SPIPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 273E9AFA205A30F90006ED5C /* SPIPurchase.m */; };
 		273E9B11205A30F90006ED5C /* SPIPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 273E9AFA205A30F90006ED5C /* SPIPurchase.m */; };
 		273E9B12205A30F90006ED5C /* SPIMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 273E9AFB205A30F90006ED5C /* SPIMessage.h */; };
@@ -135,7 +132,6 @@
 		273E9AE6205A30EC0006ED5C /* SPIDiffieHellman.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPIDiffieHellman.h; sourceTree = "<group>"; };
 		273E9AEE205A30F90006ED5C /* SPISettlement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPISettlement.h; sourceTree = "<group>"; };
 		273E9AEF205A30F90006ED5C /* SPIPairing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPIPairing.h; sourceTree = "<group>"; };
-		273E9AF0205A30F90006ED5C /* SPILogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPILogin.m; sourceTree = "<group>"; };
 		273E9AF1205A30F90006ED5C /* SPIKeyRollingHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPIKeyRollingHelper.h; sourceTree = "<group>"; };
 		273E9AF2205A30F90006ED5C /* SPIMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPIMessage.m; sourceTree = "<group>"; };
 		273E9AF3205A30F90006ED5C /* SPIPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPIPurchase.h; sourceTree = "<group>"; };
@@ -144,7 +140,6 @@
 		273E9AF6205A30F90006ED5C /* SPIPairing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPIPairing.m; sourceTree = "<group>"; };
 		273E9AF7205A30F90006ED5C /* SPISettlement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPISettlement.m; sourceTree = "<group>"; };
 		273E9AF8205A30F90006ED5C /* SPIKeyRollingHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPIKeyRollingHelper.m; sourceTree = "<group>"; };
-		273E9AF9205A30F90006ED5C /* SPILogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPILogin.h; sourceTree = "<group>"; };
 		273E9AFA205A30F90006ED5C /* SPIPurchase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPIPurchase.m; sourceTree = "<group>"; };
 		273E9AFB205A30F90006ED5C /* SPIMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPIMessage.h; sourceTree = "<group>"; };
 		273E9AFC205A30F90006ED5C /* SPISecrets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPISecrets.m; sourceTree = "<group>"; };
@@ -257,8 +252,6 @@
 			children = (
 				273E9AF1205A30F90006ED5C /* SPIKeyRollingHelper.h */,
 				273E9AF8205A30F90006ED5C /* SPIKeyRollingHelper.m */,
-				273E9AF9205A30F90006ED5C /* SPILogin.h */,
-				273E9AF0205A30F90006ED5C /* SPILogin.m */,
 				273E9AFB205A30F90006ED5C /* SPIMessage.h */,
 				273E9AF2205A30F90006ED5C /* SPIMessage.m */,
 				273E9AEF205A30F90006ED5C /* SPIPairing.h */,
@@ -462,7 +455,6 @@
 				273E9B02205A30F90006ED5C /* SPIKeyRollingHelper.h in Headers */,
 				273E9B25205A31030006ED5C /* SPIRequestIdHelper.h in Headers */,
 				273E9B59205A34BF0006ED5C /* NSData+Crypto.h in Headers */,
-				273E9B0F205A30F90006ED5C /* SPILogin.h in Headers */,
 				273E9AB6205A2FDE0006ED5C /* SPIClient.h in Headers */,
 				273E9B15205A30F90006ED5C /* SPIPairingHelper.h in Headers */,
 				273E9B24205A31030006ED5C /* SPIWebSocketConnection.h in Headers */,
@@ -631,7 +623,6 @@
 				29534F5C20BD991F0048C0E0 /* SPICashout.m in Sources */,
 				273E9AB4205A2FDE0006ED5C /* SPIModels.m in Sources */,
 				273E9B5E205A34BF0006ED5C /* NSString+Crypto.m in Sources */,
-				273E9B00205A30F90006ED5C /* SPILogin.m in Sources */,
 				290EBBAA20C55E3000D98C3A /* SPIPreAuth.m in Sources */,
 				279BB736205B581E005ADECB /* JKBigInteger.m in Sources */,
 				273E9B06205A30F90006ED5C /* SPIPairingHelper.m in Sources */,
@@ -667,7 +658,6 @@
 				273E9B2F205A310A0006ED5C /* SPILogger.m in Sources */,
 				273E9AB5205A2FDE0006ED5C /* SPIModels.m in Sources */,
 				27BEE9892058F9C400E74E66 /* SPIClient_iOSTests.m in Sources */,
-				273E9B01205A30F90006ED5C /* SPILogin.m in Sources */,
 				273E9B37205A315A0006ED5C /* NSDataCryptoTests.m in Sources */,
 				273E9B07205A30F90006ED5C /* SPIPairingHelper.m in Sources */,
 				273E9B04205A30F90006ED5C /* SPIMessage.m in Sources */,

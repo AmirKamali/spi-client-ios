@@ -11,10 +11,10 @@
 
 @interface SPIPurchaseHelper : NSObject
 
-+(SPIPurchaseRequest *) createPurchaseRequest:(NSInteger)amountCents
++ (SPIPurchaseRequest *) createPurchaseRequest:(NSInteger)amountCents
                                    purchaseId:(NSString *)purchaseId;
 
-+(SPIPurchaseRequest *) createPurchaseRequestV2:(NSString *)posRefId
++ (SPIPurchaseRequest *) createPurchaseRequestV2:(NSString *)posRefId
                                  purchaseAmount:(NSInteger)purchaseAmount
                                       tipAmount:(NSInteger)tipAmount
                                       cashAmount:(NSInteger)cashAmount

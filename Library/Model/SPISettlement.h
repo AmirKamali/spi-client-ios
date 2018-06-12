@@ -37,6 +37,7 @@
 
 
 @interface SPISettlement : NSObject
+
 @property (nonatomic, readonly, copy) NSString     *requestId;
 @property (nonatomic, readonly, assign) BOOL       isSuccess;
 @property (nonatomic, readonly, strong) SPIMessage *message;
@@ -68,10 +69,13 @@
 - (NSArray<SPISchemeSettlementEntry *>*)getSchemeSettlementEntries;
 
 @end
+
 @interface SPISettlementEnquiryRequest:NSObject
+
 @property (nonatomic, readonly, copy) NSString     *requestId;
 
 - (instancetype)initWithRequestId:(NSString *)requestId;
 
 - (SPIMessage *)toMessage;
+
 @end

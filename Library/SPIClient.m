@@ -15,7 +15,6 @@
 #import "SPIMessage.h"
 #import "SPIPairing.h"
 #import "SPIPingHelper.h"
-#import "SPILogin.h"
 #import "SPIPurchase.h"
 #import "SPIKeyRollingHelper.h"
 #import "SPIRequestIdHelper.h"
@@ -98,14 +97,17 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [_transactionMonitoringTimer cancel];
     // [_tryToReconnectTimer cancel];
 }
+
 - (SPIPreAuth *)enablePreauth{
     _spiPreauth = [[SPIPreAuth alloc] init:self queue:_queue];
     return _spiPreauth;
 }
+
 - (SPIPayAtTable *)enablePayAtTable{
     _spiPat = [[SPIPayAtTable alloc] initWithClient:self];
     return _spiPat;
 }
+
 - (BOOL)start {
     if (self.started) {return false;}
     
@@ -142,9 +144,11 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         return YES;
     }
 }
+
 - (NSString *)getVersion{
     return [[NSBundle bundleWithIdentifier:@"com.assemblypayments.SPIClient-iOS"] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
 }
+
 - (void)setSecretEncKey:(NSString *)encKey hmacKey:(NSString *)hmacKey {
     self.secrets = [[SPISecrets alloc] initWithEncKey:encKey hmacKey:hmacKey];
 }
@@ -302,6 +306,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         [weakSelf.delegate spi:self transactionFlowStateChanged:weakSelf.state];
     });
 }
+
 - (void)initiatePurchaseTx:(NSString *)posRefId purchaseAmount:(int)purchaseAmount tipAmount:(int)tipAmount cashoutAmount:(int)cashoutAmount promptForCashout:(bool)promptForCashout  completion:(SPICompletionTxResult)completion {
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
@@ -331,6 +336,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     
     
 }
+
 - (void)initiatePurchaseTxV2:(NSString *)posRefId purchaseAmount:(NSInteger)purchaseAmount tipAmount:(NSInteger)tipAmount cashoutAmount:(NSInteger)cashoutAmount promptForCashout:(BOOL)promptForCashout completion:(SPICompletionTxResult)completion{
     
     if (self.state.status == SPIStatusUnpaired) {
@@ -416,6 +422,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         
     });
 }
+
 - (void)initiateCashoutOnlyTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion{
     __weak __typeof(& *self) weakSelf = self;
     
@@ -439,6 +446,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         
     });
 }
+
 - (void)initiateMotoPurchaseTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion{
     __weak __typeof(& *self) weakSelf = self;
     
@@ -462,6 +470,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"MOTO Initiated"]);
     
 }
+
 - (void)submitAuthCode:(NSString *)authCode completion:(SPIAuthCodeSubmitCompletionResult)completion{
     __weak __typeof(& *self) weakSelf = self;
     
@@ -486,6 +495,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [weakSelf.delegate spi:self transactionFlowStateChanged:_state];
     completion([[SPISubmitAuthCodeResult alloc] initWithValidFormat:true msg:@"Valid Code"]);
 }
+
 - (void)cancelTransaction {
     __weak __typeof(& *self) weakSelf = self;
     
@@ -537,6 +547,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Settle initiated"]);
     });
 }
+
 - (void)initiateSettlementEnquiry:(NSString *)posRefId completion:(SPICompletionTxResult)completion {
     __weak __typeof(& *self) weakSelf = self;
     dispatch_async(self.queue, ^{
@@ -563,6 +574,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     });
     
 }
+
 - (void)initiateGetLastTxWithCompletion:(SPICompletionTxResult)completion {
     __weak __typeof(& *self) weakSelf = self;
     
@@ -589,6 +601,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Get last transaction initiated"]);
     });
 }
+
 - (void)initiateRecovery:(NSString *)posRefId transactionType:(SPITransactionType) txType completion:(SPICompletionTxResult)completion{
     
     if (self.state.status == SPIStatusUnpaired) {
@@ -744,23 +757,22 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         [self onPairingFailed];
     }
 }
-//private void _handleDropKeysAdvice(Message m)
-//{
-//    _log.Info("Eftpos was Unpaired. I shall unpair from my end as well.");
-//    _doUnpair();
-//}
+
 - (void)handleDropKeysAdvice:(SPIMessage *)message{
     SPILog(@"Eftpos was Unpaired. I shall unpair from my end as well.");
     [self doUnpair];
 }
+
 - (void)doUnpair
 {
     _state.status = SPIStatusUnpaired;
+    [_delegate spi:self statusChanged:_state];
     [_connection disconnect];
     _secrets = nil;
     _spiMessageStamp.secrets = nil;
     [_delegate spi:self secretsChanged:_secrets state:_state];
 }
+
 - (void)onPairingSuccess {
     NSLog(@"onPairingSuccess");
     
@@ -780,6 +792,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [self.connection disconnect];
     
     self.state.status = SPIStatusUnpaired;
+    [_delegate spi:self statusChanged:_state];
     
     self.state.pairingFlowState.message                = @"Pairing Failed";
     self.state.pairingFlowState.isFinished             = YES;
@@ -828,6 +841,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     
     [self.delegate spi:self transactionFlowStateChanged:self.state.copy];
 }
+
 - (void)handleAuthCodeRequired:(SPIMessage *)m {
     NSLog(@"handleAuthCodeRequired");
     __weak __typeof(& *self) weakSelf = self;
@@ -846,6 +860,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [weakSelf.delegate spi:self transactionFlowStateChanged:_state];
     
 }
+
 - (void)handleCashoutOnlyResponse:(SPIMessage *)m {
     NSLog(@"handleCashoutOnlyResponse");
     __weak __typeof(& *self) weakSelf = self;
@@ -863,6 +878,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     });
     [weakSelf.delegate spi:self transactionFlowStateChanged:_state];
 }
+
 - (void)handleMotoPurchaseResponse:(SPIMessage *)m {
     NSLog(@"handleMotoPurchaseResponse");
     __weak __typeof(& *self) weakSelf = self;
@@ -1076,6 +1092,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     
     return gltResponse.successState;
 }
+
 - (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse
                           posRefId:(NSString *)posRefId{
     SPILog(@"GLT CHECK: PosRefId: %@->%@}",posRefId,[gltResponse getPosRefId]);
@@ -1086,6 +1103,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 
     return gltResponse.getSuccessState;
 }
+
 - (void)transactionMonitoring {
     __weak __typeof(& *self) weakSelf = self;
     
@@ -1175,6 +1193,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                 if (weakSelf.state.status != SPIStatusUnpaired) {
                     
                     weakSelf.state.status = SPIStatusPairedConnecting;
+                    [weakSelf.delegate spi:self statusChanged:weakSelf.state];
                     @synchronized(self){
                         if (weakSelf.state.flow == SPIFlowTransaction && !weakSelf.state.pairingFlowState.isFinished) {
                             // we're in the middle of a transaction, just so you know!
@@ -1182,11 +1201,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                             SPILog(@"Lost connection in the middle of a transaction...");
                         }
                     }
-                    
-                    
-                    
-                    
-                    //[weakSelf.delegate spi:weakSelf statusChanged:weakSelf.state];
+
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                         if (weakSelf.connection == nil) {return ;}
                         SPILog(@"Will try to reconnect soon...");
@@ -1195,17 +1210,6 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                             [weakSelf.connection connect];
                         }
                     });
-                    
-                    
-                    //                    [weakSelf.tryToReconnectTimer cancel];
-                    //                    [weakSelf.tryToReconnectTimer afterDelay:tryToReconnectTime repeat:NO block:^(id self) {
-                    //                        SPILog(@"tryToReconnect");
-                    //
-                    //                        if (weakSelf.state.status != SPIStatusUnpaired) {
-                    //                            SPILog(@"Try to reconnect now");
-                    //                            [weakSelf.connection connect];
-                    //                        }
-                    //                    }];
                     
                 } else if (weakSelf.state.flow == SPIFlowPairing) {
                     SPILog(@"Lost connection during pairing.");
@@ -1379,6 +1383,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     self.mostRecentPongReceived = m;
     SPILog(@"PongLatency:%i", [NSDate date].timeIntervalSince1970 - _mostRecentPingSentTime);
 }
+
 - (void)handleSettlementEnquiryResponse:(SPIMessage *)m{
     NSLog(@"handleSettlementEnquiryResponse");
     __weak __typeof(& *self) weakSelf = self;
@@ -1530,6 +1535,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 }
 
 @end
+
 @implementation SPIConfig
 - (void)addReceiptConfig:(NSMutableDictionary*) data{
     if (_promptForCustomerCopyOnEftpos){

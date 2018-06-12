@@ -36,7 +36,7 @@
     return [[JKBigDecimal alloc] initWithString:string];
 }
 
--(id)initWithBigInteger:(JKBigInteger *)i figure:(NSInteger)f
+- (id)initWithBigInteger:(JKBigInteger *)i figure:(NSInteger)f
 {
     self = [super init];
     if (self) {
@@ -55,7 +55,8 @@
     }
     return self;
 }
--(void)encodeWithCoder:(NSCoder *)encoder
+
+- (void)encodeWithCoder:(NSCoder *)encoder
 {
     [bigInteger encodeWithCoder:encoder];
     [encoder encodeInteger:figure forKey:@"JKBigDecimalFigure"];
@@ -148,11 +149,6 @@
     JKBigDecimal *newBigDecimal = [[JKBigDecimal alloc] initWithBigInteger:newBigInteger figure:bigDecimal.figure];
     return newBigDecimal;
 }
-
-//- (NSArray *)divideAndRemainder:(JKBigDecimal *)bigInteger
-//{
-//    
-//}
 
 -(NSComparisonResult) compare:(JKBigDecimal *)other {
     JKBigDecimal *tens = [[JKBigDecimal alloc] initWithString:@"10"];

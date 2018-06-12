@@ -14,8 +14,10 @@
 
 @property (nonatomic, readonly) NSInteger          cashoutAmount;
 @property (nonatomic, readonly, copy) NSString     *posRefId;
-@property(nonatomic,retain)  SPIConfig *config;;
+@property(nonatomic,retain)  SPIConfig *config;
+
 - (SPIMessage *)toMessage;
+
 @end
 
 @interface SPICashoutOnlyResponse : NSObject

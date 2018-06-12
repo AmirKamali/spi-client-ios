@@ -22,9 +22,10 @@
 @property(nonatomic,retain)  SPIConfig *config;
 
 - (instancetype)initWithAmountCents:(NSInteger)amountCents
-                       posRefId:(NSString *)posRefId;
+                           posRefId:(NSString *)posRefId;
 - (SPIMessage *)toMessage;
 - (NSString *)amountSummary;
+
 @end
 
 
@@ -88,14 +89,19 @@
 @end
 
 @interface SPICancelTransactionRequest : NSObject
+
 - (SPIMessage *)toMessage;
+
 @end
 
 @interface SPIGetLastTransactionRequest : NSObject
+
 - (SPIMessage *)toMessage;
+
 @end
 
 @interface SPIGetLastTransactionResponse : NSObject
+
 @property (nonatomic, strong) SPIMessage       *message;
 @property (nonatomic, copy, readonly) NSString *bankDateTimeString;
 @property (nonatomic, copy, readonly) NSDate   *bankDate;
@@ -142,6 +148,7 @@
 @end
 
 @interface SPIRefundRequest : NSObject
+
 @property (nonatomic, readonly, copy) NSString *refundId DEPRECATED_ATTRIBUTE;
 @property (nonatomic, readonly) NSInteger      amountCents;
 @property (nonatomic, readonly, copy) NSString *posRefId;
@@ -150,6 +157,7 @@
 - (instancetype)initWithPosRefId:(NSString *)posRefId amountCents:(NSInteger)amountCents;
 
 - (SPIMessage *)toMessage;
+
 @end
 
 @interface SPIRefundResponse : NSObject
@@ -195,14 +203,17 @@
 - (BOOL)wasCustomerReceiptPrinted;
 
 - (NSString *)getResponseValue:(NSString *)attribute;
+
 @end
 
 @interface SPISignatureRequired : NSObject
+
 @property (nonatomic, readonly, copy) NSString     *requestId;
 @property (nonatomic, readonly, copy) NSString     *posRefId;
 @property (nonatomic, readonly, strong) SPIMessage *message;
 
 - (instancetype)initWithMessage:(SPIMessage *)message;
+
 - (instancetype)initWithPosRefId:(NSString *)posRefId
                        requestId:(NSString *)requestId
                        receiptToSign:(NSString *)receiptToSign;
@@ -210,45 +221,66 @@
 @end
 
 @interface SPISignatureDecline : NSObject
+
 @property (nonatomic, readonly, copy) NSString *signatureRequiredRequestId;
+
 - (instancetype)initWithSignatureRequiredRequestId:(NSString *)signatureRequiredRequestId;
+
 - (SPIMessage *)toMessage;
+
 @end
 
 @interface SPISignatureAccept : NSObject
+
 @property (nonatomic, readonly, copy) NSString *signatureRequiredRequestId;
 - (instancetype)initWithSignatureRequiredRequestId:(NSString *)signatureRequiredRequestId;
 
 - (SPIMessage *)toMessage;
 @end
+
 @interface SPIMotoPurchaseRequest:NSObject
-- (instancetype)initWithAmountCents:(NSInteger)amountCents posRefId:(NSString *)posRefId;
 
 @property (nonatomic, readonly) NSInteger          purchaseAmount;
 @property (nonatomic, readonly, copy) NSString     *posRefId;
 @property(nonatomic,retain)  SPIConfig *config;
+
+- (instancetype)initWithAmountCents:(NSInteger)amountCents posRefId:(NSString *)posRefId;
+
 - (SPIMessage *) toMessage;
 
 @end
 
 @interface SPIMotoPurchaseResponse:NSObject
-- (instancetype)initWithMessage:(SPIMessage *)message;
+
 @property (nonatomic, readonly, copy) NSString                *posRefId;
 @property (nonatomic, readonly, copy) SPIPurchaseResponse     *purchaseResponse;
+
+- (instancetype)initWithMessage:(SPIMessage *)message;
+
 @end
 
 @interface SPIPhoneForAuthRequired:NSObject
-- (instancetype)initWithMessage:(SPIMessage *)message;
-- (instancetype)initWithPosRefId:(NSString *)posRefId requestId:(NSString *)requestId phoneNumber:(NSString *)phoneNumber merchantId:(NSString *)merchantId;
+
 @property (nonatomic, readonly, copy) NSString     *requestId;
 @property (nonatomic, readonly, copy) NSString     *posRefId;
+
+- (instancetype)initWithMessage:(SPIMessage *)message;
+
+- (instancetype)initWithPosRefId:(NSString *)posRefId requestId:(NSString *)requestId phoneNumber:(NSString *)phoneNumber merchantId:(NSString *)merchantId;
+
 - (NSString *)getPhoneNumber;
+
 - (NSString *)getMerchantId;
+
 @end
 
 @interface SPIAuthCodeAdvice:NSObject
-- (instancetype)initWithPosRefId:(NSString *)posRefId authCode:(NSString *)authCode;
+
 @property (nonatomic, readonly, copy) NSString     *authCode;
 @property (nonatomic, readonly, copy) NSString     *posRefId;
+
+- (instancetype)initWithPosRefId:(NSString *)posRefId authCode:(NSString *)authCode;
+
 - (SPIMessage *) toMessage;
+
 @end

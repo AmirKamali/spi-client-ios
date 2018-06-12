@@ -17,6 +17,7 @@
     _posRefId = posRefId;
     return  self;
 }
+
 - (SPIMessage *)toMessage{
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     [data setValue:_posRefId forKey:@"pos_ref_id"];
@@ -45,57 +46,75 @@
     return self;
     
 }
+
 - (NSString *)getRRN{
      return [self.message getDataStringValue:@"rrn"];
 }
+
 - (NSString *)getCashoutAmount{
     return [self.message getDataStringValue:@"cash_amount"];
 }
+
 - (NSString *)getBankNonCashAmount{
     return [self.message getDataStringValue:@"bank_noncash_amount"];
 }
+
 - (NSString *)getBankCashAmount{
     return [self.message getDataStringValue:@"bank_cash_amount"];
 }
+
 - (NSString *)getCustomerReceipt{
     return [self.message getDataStringValue:@"customer_receipt"];
 }
+
 - (NSString *)getMerchantReceipt{
     return [self.message getDataStringValue:@"merchant_receipt"];
 }
+
 - (NSString *)getResponseText{
     return [self.message getDataStringValue:@"host_response_text"];
 }
+
 - (NSString *)getResponseCode{
     return [self.message getDataStringValue:@"host_response_code"];
 }
+
 - (NSString *)getTerminalReferenceId{
     return [self.message getDataStringValue:@"terminal_ref_id"];
 }
+
 - (NSString *)getAccountType{
     return [self.message getDataStringValue:@"account_type"];
 }
+
 - (NSString *)getAuthCode{
     return [self.message getDataStringValue:@"auth_code"];
 }
+
 - (NSString *)getBankDate{
     return [self.message getDataStringValue:@"bank_date"];
 }
+
 - (NSString *)getBankTime{
     return [self.message getDataStringValue:@"bank_time"];
 }
+
 - (NSString *)getMaskedPan{
     return [self.message getDataStringValue:@"masked_pan"];
 }
+
 - (NSString *)getTerminalId{
     return [self.message getDataStringValue:@"terminal_id"];
 }
+
 - (BOOL)wasMerchantReceiptPrinted{
     return [_message getDataBoolValue:@"merchant_receipt_printed" defaultIfNotFound:false];
 }
+
 - (BOOL)wasCustomerReceiptPrinted{
     return [_message getDataBoolValue:@"customer_receipt_printed" defaultIfNotFound:false];
 }
+
 - (NSString *)getResponseValue:(NSString *)attribute{
     if (!attribute) return @"";
     

@@ -25,6 +25,7 @@
 - (void)addReceiptConfig:(NSMutableDictionary*) data;
 
 @end
+
 typedef void (^SPICompletionTxResult)(SPIInitiateTxResult *result);
 typedef void (^SPIAuthCodeSubmitCompletionResult)(SPISubmitAuthCodeResult *result);
 
@@ -81,7 +82,7 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
 
 @property (nonatomic, weak) id <SPIDelegate> delegate;
 
-@property(nonatomic,readonly)  SPIConfig *config;;
+@property(nonatomic,readonly)  SPIConfig *config;
 /**
  * If you provide secrets, it will start in PairedConnecting status; Otherwise it will start in Unpaired status.
  *
@@ -276,5 +277,6 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
 - (SPIPayAtTable *)enablePayAtTable;
 
 - (SPIPreAuth *)enablePreauth;
+
 @end
 

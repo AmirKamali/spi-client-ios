@@ -12,9 +12,12 @@
 #import "SPIPairing.h"
 
 @interface SPIPublicKeyAndSecret : NSObject
+
 @property (nonatomic, readonly, copy) NSString *myPublicKey;
 @property (nonatomic, readonly, copy) NSString *sharedSecretKey;
+
 - (id)initWithMyPublicKey:(NSString *)myPublicKey secretKey:(NSString *)sharedSecretKey;
+
 @end
 
 /**
