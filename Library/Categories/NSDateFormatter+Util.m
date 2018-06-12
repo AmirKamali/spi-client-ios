@@ -37,7 +37,7 @@
     
     return dateFormatter;
 }
-+ (NSDateFormatter *)bankSettleMentFormat {
++ (NSDateFormatter *)bankSettleMentFormatter {
     static NSDateFormatter *dateFormatter = nil;
     
     static dispatch_once_t onceToken;
@@ -50,7 +50,7 @@
     
     return dateFormatter;
 }
-+ (NSDateFormatter *)dateFormaterWithFormat:(NSString *)format {
++ (NSDateFormatter *)dateFormaterWithFormatter:(NSString *)format {
     static NSDateFormatter *dateFormatter = nil;
     
     static dispatch_once_t onceToken;

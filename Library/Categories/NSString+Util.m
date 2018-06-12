@@ -19,7 +19,4 @@
 - (NSDate *)toDate {
     return [[NSDateFormatter dateFormatter] dateFromString:self];
 }
-+ (BOOL)isNilOrEmpty:(NSString *)str{
-    return (str == nil || str.length == 0);
-}
 @end

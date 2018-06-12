@@ -8,7 +8,7 @@
 
 #import "SPIPreAuth.h"
 
-@interface SPIPreAuth(){
+@interface SPIPreAuth () {
     dispatch_queue_t _queue;
     SPIClient *_client;
 }
@@ -17,7 +17,7 @@
 
 @implementation SPIPreAuth
 
-- (instancetype)init:(SPIClient *)client queue:(dispatch_queue_t)queue{
+- (instancetype)init:(SPIClient *)client queue:(dispatch_queue_t)queue {
     _client = client;
     _queue = queue;
     

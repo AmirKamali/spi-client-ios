@@ -11,7 +11,7 @@
 @class SPIMessage;
 
 @interface SPISettleRequest : NSObject
-@property (nonatomic, readonly, copy) NSString *settleId;
+@property(nonatomic, readonly, copy) NSString *settleId;
 
 - (instancetype)initWithSettleId:(NSString *)settleId;
 
@@ -21,10 +21,10 @@
 
 @interface SPISchemeSettlementEntry : NSObject
 
-@property (nonatomic, readonly, copy) NSString *schemeName;
-@property (nonatomic) bool settleByAcquirer;
-@property (nonatomic) NSInteger totalCount;
-@property (nonatomic) NSInteger totalValue;
+@property(nonatomic, readonly, copy) NSString *schemeName;
+@property(nonatomic) bool settleByAcquirer;
+@property(nonatomic) NSInteger totalCount;
+@property(nonatomic) NSInteger totalValue;
 
 - (instancetype)initWithSchemeName:(NSString *)schemeName
                   settleByAcquirer:(BOOL)settleByAcquirer
@@ -35,12 +35,11 @@
 
 @end
 
-
 @interface SPISettlement : NSObject
 
-@property (nonatomic, readonly, copy) NSString     *requestId;
-@property (nonatomic, readonly, assign) BOOL       isSuccess;
-@property (nonatomic, readonly, strong) SPIMessage *message;
+@property(nonatomic, readonly, copy) NSString *requestId;
+@property(nonatomic, readonly, assign) BOOL isSuccess;
+@property(nonatomic, readonly, strong) SPIMessage *message;
 
 - (instancetype)initWithMessage:(SPIMessage *)message;
 
@@ -66,13 +65,13 @@
 
 - (NSString *)getTerminalId;
 
-- (NSArray<SPISchemeSettlementEntry *>*)getSchemeSettlementEntries;
+- (NSArray<SPISchemeSettlementEntry *> *)getSchemeSettlementEntries;
 
 @end
 
-@interface SPISettlementEnquiryRequest:NSObject
+@interface SPISettlementEnquiryRequest : NSObject
 
-@property (nonatomic, readonly, copy) NSString     *requestId;
+@property(nonatomic, readonly, copy) NSString *requestId;
 
 - (instancetype)initWithRequestId:(NSString *)requestId;
 

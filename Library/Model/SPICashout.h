@@ -6,26 +6,27 @@
 //  Copyright © 2018 Assembly Payments. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import "SPIClient.h"
+#import <UIKit/UIKit.h>
 
 @interface CashoutOnlyRequest : NSObject
-@property (nonatomic, readonly) NSInteger          cashoutAmount;
-@property (nonatomic, readonly, copy) NSString     *posRefId;
-@property(nonatomic,retain)  SPIConfig *config;
+@property(nonatomic, readonly) NSInteger cashoutAmount;
+@property(nonatomic, readonly, copy) NSString *posRefId;
+@property(nonatomic, retain) SPIConfig *config;
 
 - (SPIMessage *)toMessage;
 
-- (instancetype)initWithAmountCents:(NSInteger)amountCents posRefId:(NSString *)posRefId;
+- (instancetype)initWithAmountCents:(NSInteger)amountCents
+                           posRefId:(NSString *)posRefId;
 
 @end
 
 @interface SPICashoutOnlyResponse : NSObject
-@property (nonatomic, readonly) BOOL               isSuccess;
-@property (nonatomic, readonly, copy) NSString     *requestid;
-@property (nonatomic, readonly, copy) NSString     *schemeName;
-@property (nonatomic,retain) NSString              *posRefId;
-@property (nonatomic, readonly, strong) SPIMessage *message;
+@property(nonatomic, readonly) BOOL isSuccess;
+@property(nonatomic, readonly, copy) NSString *requestid;
+@property(nonatomic, readonly, copy) NSString *schemeName;
+@property(nonatomic, retain) NSString *posRefId;
+@property(nonatomic, readonly, strong) SPIMessage *message;
 
 - (instancetype)initWithMessage:(SPIMessage *)message;
 
@@ -64,6 +65,5 @@
 - (BOOL)wasCustomerReceiptPrinted;
 
 - (NSString *)getResponseValue:(NSString *)attribute;
-
 
 @end

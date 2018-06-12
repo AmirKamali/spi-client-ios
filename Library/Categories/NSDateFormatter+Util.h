@@ -29,13 +29,13 @@
  *
  * @return NSDateFormatter
  */
-+ (NSDateFormatter *)bankSettleMentFormat;
++ (NSDateFormatter *)bankSettleMentFormatter;
 
 /**
  * Formats date time string in custom format
  *
  * @return NSDateFormatter
  */
-+ (NSDateFormatter *)dateFormaterWithFormat:(NSString *)format;
++ (NSDateFormatter *)dateFormaterWithFormatter:(NSString *)format;
 
 @end

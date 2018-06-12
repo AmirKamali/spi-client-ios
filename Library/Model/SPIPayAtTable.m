@@ -51,10 +51,10 @@
 - (SPIMessage *)toMessage:(NSString *)messageId{
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     [data setObject:[NSNumber numberWithInteger:BillRetrievalResultSuccess] forKey:@"success"];
-    if ([NSString isNilOrEmpty:_billId]) {
+    if (_billId.length > 0) {
         [data setObject:_billId forKey:@"bill_id"];
     }
-    if ([NSString isNilOrEmpty:_tableId]){
+    if (_tableId.length > 0) {
         [data setObject:_tableId forKey:@"table_id"];
     }
     if (_result == BillRetrievalResultSuccess){
