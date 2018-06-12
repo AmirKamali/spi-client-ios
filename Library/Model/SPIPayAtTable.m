@@ -185,10 +185,10 @@ SPIMessage* _incomingAdvice;
     _spi = spi;
     return self;
 }
--(void)PushPayAtTableConfig{
+- (void)PushPayAtTableConfig{
     
 }
--(void)handleGetBillDetailsRequest:(SPIMessage *)message{
+- (void)handleGetBillDetailsRequest:(SPIMessage *)message{
     NSString * operatorId = [message getDataStringValue:@"operator_id"];
     NSString * tableId = [message getDataStringValue:@"table_id"];
     
@@ -201,7 +201,7 @@ SPIMessage* _incomingAdvice;
     }
     [_spi send:[billStatus toMessage:message.mid]];
 }
--(void)handleBillPaymentAdvice:(SPIMessage *)message{
+- (void)handleBillPaymentAdvice:(SPIMessage *)message{
     SPIBillPayment *billPayment = [[SPIBillPayment alloc] initWithMessage:message];
     
     // Ask POS for Bill Details, inluding encoded PaymentData
@@ -246,7 +246,7 @@ SPIMessage* _incomingAdvice;
     
     [_spi send:[updatedBillStatus toMessage:message.mid]];
 }
--(void)handleGetTableConfig:(SPIMessage *)message{
+- (void)handleGetTableConfig:(SPIMessage *)message{
     [_spi send:[_config toMessage:message.mid]];
 }
 @end

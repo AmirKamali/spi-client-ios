@@ -168,7 +168,7 @@
 
 - (NSString *)getMerchantReceipt;
 
--(NSDate *)getSettlementDate;
+- (NSDate *)getSettlementDate;
 
 - (NSString *)getResponseText;
 
@@ -242,8 +242,8 @@
 - (instancetype)initWithPosRefId:(NSString *)posRefId requestId:(NSString *)requestId phoneNumber:(NSString *)phoneNumber merchantId:(NSString *)merchantId;
 @property (nonatomic, readonly, copy) NSString     *requestId;
 @property (nonatomic, readonly, copy) NSString     *posRefId;
--(NSString *)getPhoneNumber;
--(NSString *)getMerchantId;
+- (NSString *)getPhoneNumber;
+- (NSString *)getMerchantId;
 @end
 
 @interface SPIAuthCodeAdvice:NSObject

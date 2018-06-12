@@ -104,17 +104,17 @@ typedef NS_ENUM (NSUInteger, SPIPaymentType) {
 @end
 
 @protocol SPIPayAtTableDelegate <NSObject>
--(SPIBillStatusResponse *)payAtTableGetBillStatus:(NSString *)billId tableId:(NSString *)tableId operatorId:(NSString *)operatorId;
--(SPIBillStatusResponse *)PayAtTableBillPaymentReceived:(SPIBillPayment *)billPayment updatedBillData:(NSString *)updatedBillData;
+- (SPIBillStatusResponse *)payAtTableGetBillStatus:(NSString *)billId tableId:(NSString *)tableId operatorId:(NSString *)operatorId;
+- (SPIBillStatusResponse *)PayAtTableBillPaymentReceived:(SPIBillPayment *)billPayment updatedBillData:(NSString *)updatedBillData;
 
 @end
 @interface SPIPayAtTable:NSObject
 @property (nonatomic,readonly,copy) SPIPayAtTableConfig *config;
 @property (nonatomic, weak) id <SPIPayAtTableDelegate> delegate;
 - (instancetype)initWithClient:(SPIClient *)spi;
--(void)PushPayAtTableConfig;
--(void)handleGetTableConfig:(SPIMessage *)message;
--(void)handleGetBillDetailsRequest:(SPIMessage *)message;
--(void)handleBillPaymentAdvice:(SPIMessage *)message;
+- (void)PushPayAtTableConfig;
+- (void)handleGetTableConfig:(SPIMessage *)message;
+- (void)handleGetBillDetailsRequest:(SPIMessage *)message;
+- (void)handleBillPaymentAdvice:(SPIMessage *)message;
 
 @end

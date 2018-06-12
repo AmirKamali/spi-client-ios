@@ -22,7 +22,7 @@
 @property (nonatomic) BOOL promptForCustomerCopyOnEftpos;
 @property (nonatomic) BOOL signatureFlowOnEftpos;
 
--(void)addReceiptConfig:(NSMutableDictionary*) data;
+- (void)addReceiptConfig:(NSMutableDictionary*) data;
 
 @end
 typedef void (^SPICompletionTxResult)(SPIInitiateTxResult *result);
@@ -180,7 +180,7 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  * @param amountCents NSInteger
  * @param completion SPICompletionTxResult
  */
--(void)initiateMotoPurchaseTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion;
+- (void)initiateMotoPurchaseTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion;
 
 /**
  * Initiates a cashout only transaction. Be subscribed to TxFlowStateChanged event to get updates on the process.
@@ -189,7 +189,7 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  * @param amountCents NSInteger
  * @param completion SPICompletionTxResult
  */
--(void)initiateCashoutOnlyTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion;
+- (void)initiateCashoutOnlyTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion;
 
 /**
  * Initiates a Mail Order / Telephone Order Purchase Transaction
@@ -251,7 +251,7 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
 * @param posRefId     The is that you had assigned to the transaction that you are trying to recover.
 * @param txType       The transaction type.
 */
--(void)initiateRecovery:(NSString *)posRefId transactionType:(SPITransactionType) txType completion:(SPICompletionTxResult)completion;
+- (void)initiateRecovery:(NSString *)posRefId transactionType:(SPITransactionType) txType completion:(SPICompletionTxResult)completion;
 /**
  * Attempts to conclude whether a gltResponse matches an expected transaction and returns the outcome.
  * If Success/Failed is returned, it means that the GTL response did match, and that transaction was successful/failed.
@@ -273,8 +273,8 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
                           posRefId:(NSString *)posRefId;
 - (BOOL)send:(SPIMessage *)message;
 
--(SPIPayAtTable *)enablePayAtTable;
+- (SPIPayAtTable *)enablePayAtTable;
 
--(SPIPreAuth *)enablePreauth;
+- (SPIPreAuth *)enablePreauth;
 @end
 

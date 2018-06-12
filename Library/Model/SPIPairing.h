@@ -69,6 +69,6 @@
 @end
 
 @interface SPIDropKeysRequest : NSObject
--(SPIMessage *)toMessage;
+- (SPIMessage *)toMessage;
 @end
 

@@ -47,7 +47,7 @@
     return message;
     
 }
--(NSString *)amountSummary{
+- (NSString *)amountSummary{
     return [NSString stringWithFormat:@"Purchase: %.2f; Tip: %.2f; Cashout: %.2f;",((float)_purchaseAmount/100.0),((float)_tipAmount/100.0),((float)_cashoutAmount/100.0)];
 }
 
@@ -119,7 +119,7 @@
 - (BOOL)wasCustomerReceiptPrinted{
     return [self.message getDataBoolValue:@"customer_receipt_printed" defaultIfNotFound:false];
 }
--(NSDate *)getSettlementDate{
+- (NSDate *)getSettlementDate{
     NSString *dateStr = [_message getDataStringValue:@"bank_settlement_date"];
     if (dateStr.length == 0){
         return nil;
@@ -371,7 +371,7 @@
 }
 //
 
--(NSDate *)getSettlementDate{
+- (NSDate *)getSettlementDate{
     NSString *dateStr = [_message getDataStringValue:@"bank_settlement_date"];
     if (dateStr.length == 0){
         return nil;
@@ -556,10 +556,10 @@
     _merchantId = merchantId;
     return self;
 }
--(NSString *)getPhoneNumber{
+- (NSString *)getPhoneNumber{
     return _phoneNumber;
 }
--(NSString *)getMerchantId{
+- (NSString *)getMerchantId{
     return _merchantId;
 }
 

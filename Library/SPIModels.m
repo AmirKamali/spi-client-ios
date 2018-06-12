@@ -196,13 +196,13 @@
     
     return state;
 }
--(void)phoneForAuthRequired:(SPIPhoneForAuthRequired *) spiMessage msg:(NSString *)msg{
+- (void)phoneForAuthRequired:(SPIPhoneForAuthRequired *) spiMessage msg:(NSString *)msg{
     _phoneForAuthRequiredMessage = spiMessage;
     _isAwaitingGltResponse    = true;
     _isAwaitingPhoneForAuth   = true;
     _displayMessage = msg;
 }
--(void)authCodeSent:(NSString *) msg{
+- (void)authCodeSent:(NSString *) msg{
     _isAwaitingPhoneForAuth = false;
     _displayMessage = msg;
 }

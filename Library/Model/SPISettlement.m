@@ -113,7 +113,7 @@
     return [self.message getDataStringValue:@"terminal_id"];
 }
 
--(NSArray<SPISchemeSettlementEntry *>*)getSchemeSettlementEntries{
+- (NSArray<SPISchemeSettlementEntry *>*)getSchemeSettlementEntries{
 
     NSArray *schemes = [_message getDataArrayValue:@"schemes"];
     NSMutableArray<SPISchemeSettlementEntry *> *entries = [[NSMutableArray alloc] init];

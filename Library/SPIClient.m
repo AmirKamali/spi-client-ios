@@ -416,7 +416,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         
     });
 }
--(void)initiateCashoutOnlyTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion{
+- (void)initiateCashoutOnlyTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion{
     __weak __typeof(& *self) weakSelf = self;
     
     if (weakSelf.state.status == SPIStatusUnpaired) {
@@ -439,7 +439,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         
     });
 }
--(void)initiateMotoPurchaseTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion{
+- (void)initiateMotoPurchaseTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion{
     __weak __typeof(& *self) weakSelf = self;
     
     if (weakSelf.state.status == SPIStatusUnpaired) {
@@ -589,7 +589,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Get last transaction initiated"]);
     });
 }
--(void)initiateRecovery:(NSString *)posRefId transactionType:(SPITransactionType) txType completion:(SPICompletionTxResult)completion{
+- (void)initiateRecovery:(NSString *)posRefId transactionType:(SPITransactionType) txType completion:(SPICompletionTxResult)completion{
     
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:false message:@"Not Paired"]);
@@ -749,11 +749,11 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 //    _log.Info("Eftpos was Unpaired. I shall unpair from my end as well.");
 //    _doUnpair();
 //}
--(void)handleDropKeysAdvice:(SPIMessage *)message{
+- (void)handleDropKeysAdvice:(SPIMessage *)message{
     SPILog(@"Eftpos was Unpaired. I shall unpair from my end as well.");
     [self doUnpair];
 }
--(void)doUnpair
+- (void)doUnpair
 {
     _state.status = SPIStatusUnpaired;
     [_connection disconnect];
@@ -828,7 +828,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     
     [self.delegate spi:self transactionFlowStateChanged:self.state.copy];
 }
--(void)handleAuthCodeRequired:(SPIMessage *)m {
+- (void)handleAuthCodeRequired:(SPIMessage *)m {
     NSLog(@"handleAuthCodeRequired");
     __weak __typeof(& *self) weakSelf = self;
     
@@ -1379,7 +1379,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     self.mostRecentPongReceived = m;
     SPILog(@"PongLatency:%i", [NSDate date].timeIntervalSince1970 - _mostRecentPingSentTime);
 }
--(void)handleSettlementEnquiryResponse:(SPIMessage *)m{
+- (void)handleSettlementEnquiryResponse:(SPIMessage *)m{
     NSLog(@"handleSettlementEnquiryResponse");
     __weak __typeof(& *self) weakSelf = self;
     
@@ -1531,7 +1531,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 
 @end
 @implementation SPIConfig
--(void)addReceiptConfig:(NSMutableDictionary*) data{
+- (void)addReceiptConfig:(NSMutableDictionary*) data{
     if (_promptForCustomerCopyOnEftpos){
         [data setObject:[NSNumber numberWithBool:_promptForCustomerCopyOnEftpos] forKey:@"prompt_for_customer_copy"];
     }
