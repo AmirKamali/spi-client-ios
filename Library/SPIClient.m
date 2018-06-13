@@ -531,23 +531,19 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             return;
         }
         
-        [weakSelf.state.txFlowState
-         signatureResponded:accepted ? @"Accepting signature..."
-         : @"Declining signature..."];
+        [weakSelf.state.txFlowState signatureResponded:accepted ? @"Accepting signature..." : @"Declining signature..."];
         
-        NSString *sigReqMsgId =
-        self.state.txFlowState.signatureRequiredMessage.requestId;
-        SPIMessage *msg =
-        accepted
-        ? [[[SPISignatureAccept alloc]
-            initWithSignatureRequiredRequestId:sigReqMsgId] toMessage]
-        : [[[SPISignatureDecline alloc]
-            initWithSignatureRequiredRequestId:sigReqMsgId] toMessage];
+        NSString *sigReqMsgId = self.state.txFlowState.signatureRequiredMessage.requestId;
+        SPIMessage *msg;
+        if (accepted) {
+            msg = [[[SPISignatureAccept alloc] initWithSignatureRequiredRequestId:sigReqMsgId] toMessage];
+        } else {
+            msg = [[[SPISignatureDecline alloc] initWithSignatureRequiredRequestId:sigReqMsgId] toMessage];
+        }
         
         [weakSelf send:msg];
         
-        [weakSelf.delegate spi:weakSelf
-   transactionFlowStateChanged:weakSelf.state];
+        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
     });
 }
 
@@ -557,9 +553,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     __weak __typeof(&*self) weakSelf = self;
     
     if (weakSelf.state.status == SPIStatusUnpaired) {
-        return completion([[SPIInitiateTxResult alloc]
-                           initWithTxResult:NO
-                           message:@"Not paired"]);
+        return completion([[SPIInitiateTxResult alloc]  initWithTxResult:NO  message:@"Not paired"]);
     }
     dispatch_async(self.queue, ^{
         if (weakSelf.state.flow != SPIFlowIdle) {
@@ -1094,16 +1088,17 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  */
 - (void)handleSignatureRequired:(SPIMessage *)m {
     NSLog(@"handleSignatureRequired");
-    
-    if (self.state.flow != SPIFlowTransaction ||
-        self.state.txFlowState.isFinished) {
-        SPILog(@"Received signature required but I was not waiting for one. %@", m.decryptedJson);
-        return;
-    }
-    
-    [self.state.txFlowState
-     signatureRequired:[[SPISignatureRequired alloc] initWithMessage:m]
-     msg:@"Ask customer to sign the receipt"];
+    __weak __typeof(&*self) weakSelf = self;
+    dispatch_async(self.queue, ^{
+          NSString *incomingPosRefId = [m getDataStringValue:@"pos_ref_id"];
+        if (weakSelf.state.flow != SPIFlowTransaction ||
+            weakSelf.state.txFlowState.isFinished ||
+            ![weakSelf.state.txFlowState.posRefId isEqualToString:incomingPosRefId]) {
+              SPILog(@"Received signature required but I was not waiting for one. %@", m.decryptedJson);
+              return;
+          }
+        [self.state.txFlowState signatureRequired:[[SPISignatureRequired alloc] initWithMessage:m]  msg:@"Ask customer to sign the receipt"];
+      });
     
     [self.delegate spi:self transactionFlowStateChanged:self.state.copy];
 }
@@ -1116,8 +1111,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         NSString *incomingPosRefId = [m getDataStringValue:@"pos_ref_id"];
         if (weakSelf.state.flow != SPIFlowTransaction ||
             weakSelf.state.txFlowState.isFinished ||
-            ![weakSelf.state.txFlowState.posRefId
-              isEqualToString:incomingPosRefId]) {
+            ![weakSelf.state.txFlowState.posRefId isEqualToString:incomingPosRefId]) {
                 SPILog(@"Received Auth Code Required but I was not waiting for one. Incoming Pos Ref ID: %@",
                        incomingPosRefId);
                 return;

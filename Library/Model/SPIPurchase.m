@@ -20,7 +20,7 @@
     
     if (self) {
         _config = [[SPIConfig alloc] init];
-        _posRefId = posRefId;
+            _posRefId = posRefId;
         _purchaseAmount = amountCents;
         
         // Library Backwards Compatibility

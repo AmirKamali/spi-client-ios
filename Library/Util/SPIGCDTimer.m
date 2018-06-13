@@ -22,8 +22,9 @@
     if (self) {
         _obj = obj;
         _queue = dispatch_queue_create(
-                                       queueLabel, dispatch_queue_attr_make_with_qos_class(
-                                                                                           DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, 0));
+                                       queueLabel,
+                                       dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, 0)
+                                       );
     }
     
     return self;
