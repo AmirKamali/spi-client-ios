@@ -276,23 +276,25 @@ NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomi
     
     NSString *aesDecryptedJson =
     [SPICrypto aesDecryptEncMessage:enc key:secrets.encKeyData];
-    
-    NSData *decryptedJsonData =
-    [aesDecryptedJson dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *newJson =
-    [NSJSONSerialization JSONObjectWithData:decryptedJsonData
-                                    options:NSJSONReadingMutableLeaves
-                                      error:&error];
-    
-    if (error) {
-        NSLog(@"ERROR!!~ =%@", error);
-        NSLog(@"%@", [[NSString alloc] initWithData:decryptedJsonData
-                                           encoding:NSUTF8StringEncoding]);
+    SPIMessage *m;
+    if (aesDecryptedJson != nil){
+        NSData *decryptedJsonData = [aesDecryptedJson dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *newJson = [NSJSONSerialization JSONObjectWithData:decryptedJsonData
+                                                                options:NSJSONReadingMutableLeaves
+                                                                  error:&error];
+        
+        if (error) {
+            NSLog(@"ERROR!!~ =%@", error);
+            NSLog(@"%@", [[NSString alloc] initWithData:decryptedJsonData
+                                               encoding:NSUTF8StringEncoding]);
+        }
+        
+        NSDictionary *msgDecryptedJson = (NSDictionary *)newJson[@"message"];
+        m  = [[SPIMessage alloc] initWithDict:msgDecryptedJson];
+    }else{
+        m = [[SPIMessage alloc] init];
     }
     
-    NSDictionary *msgDecryptedJson = (NSDictionary *)newJson[@"message"];
-    
-    SPIMessage *m = [[SPIMessage alloc] initWithDict:msgDecryptedJson];
     m.incomingHmac = hmac;
     m.decryptedJson = aesDecryptedJson;
     return m;
@@ -324,19 +326,6 @@ NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomi
     }
     
     return dict.copy;
-}
-
-+ (NSString *)successStateToString:(SPIMessageSuccessState)success {
-    switch (success) {
-        case SPIMessageSuccessStateUnknown:
-            return @"UNKNOWN";
-            
-        case SPIMessageSuccessStateSuccess:
-            return @"SUCCESS";
-            
-        case SPIMessageSuccessStateFailed:
-            return @"FAILED";
-    }
 }
 
 @end

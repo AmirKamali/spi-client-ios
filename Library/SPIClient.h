@@ -316,6 +316,8 @@ secretsChanged:(SPISecrets *)secrets
                           posRefId:(NSString *)posRefId;
 - (BOOL)send:(SPIMessage *)message;
 
+- (void)onSpiMessageReceived:(NSString *)message;
+
 - (SPIPayAtTable *)enablePayAtTable;
 
 - (SPIPreAuth *)enablePreauth;

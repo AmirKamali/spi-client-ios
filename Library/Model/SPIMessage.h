@@ -147,7 +147,6 @@ typedef NS_ENUM (NSInteger, SPIMessageSuccessState) {
 
 - (NSDictionary *)toJson;
 
-+ (NSString *)successStateToString:(SPIMessageSuccessState)success;
 
 @end
 

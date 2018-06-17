@@ -55,8 +55,6 @@
 
 - (NSString *)getResponseText;
 
-- (NSString *)hostResponseText;
-
 - (NSDictionary *)toPaymentSummary;
 
 - (NSDate *)getSettlementDate;
@@ -103,7 +101,6 @@
 
 @property(nonatomic, strong) SPIMessage *message;
 @property(nonatomic, copy, readonly) NSString *bankDateTimeString;
-@property(nonatomic, copy, readonly) NSDate *bankDate;
 @property(nonatomic) SPIMessageSuccessState successState;
 
 - (instancetype)initWithMessage:(SPIMessage *)message;
@@ -168,7 +165,7 @@
 
 - (instancetype)initWithMessage:(SPIMessage *)message;
 
-- (NSString *)getRefundAmount;
+- (NSInteger)getRefundAmount;
 
 - (NSString *)getRRN;
 
@@ -180,7 +177,7 @@
 
 - (NSString *)getResponseText;
 
-- (NSString *)GetResponseCode;
+- (NSString *)getResponseCode;
 
 - (NSString *)getTerminalReferenceId;
 

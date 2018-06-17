@@ -1371,38 +1371,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                     expectedAmount:(NSInteger)expectedAmount
                        requestDate:(NSDate *)requestDate
                           posRefId:(NSString *)posRefId {
-    // adjust request time for serverTime and also give 5 seconds slack.
-    NSDate *reqServerDate = [requestDate
-                             dateByAddingTimeInterval:self.spiMessageStamp.serverTimeDelta];
-    reqServerDate =
-    [reqServerDate dateByAddingTimeInterval:txServerAdjustmentTimeInterval];
-    NSDate *gltBankDate = gltResponse.bankDate;
-    
-    // For now we use amount and date to match as best we can.
-    // In the future we will be able to pass our own pos_ref_id in the tx
-    // request that will be returned here.
-    SPILog(@"GLT CHECK: Type: %ld->%@, Amount: %ld->%ld, Date: %@->%@",
-           expectedType, gltResponse.getTxType, expectedAmount,
-           gltResponse.getTransactionAmount, reqServerDate, gltBankDate);
-    
-    if (expectedAmount != gltResponse.getTransactionAmount)
-        return SPIMessageSuccessStateUnknown;
-    
-    NSString *txType = gltResponse.getTxType;
-    if ([@"PURCHASE" isEqualToString:txType]) {
-        if (expectedType != SPITransactionTypePurchase)
-            return SPIMessageSuccessStateUnknown;
-    } else if ([@"REFUND" isEqualToString:txType]) {
-        if (expectedType != SPITransactionTypeRefund)
-            return SPIMessageSuccessStateUnknown;
-    } else {
-        return SPIMessageSuccessStateUnknown;
-    }
-    
-    if ([reqServerDate compare:gltBankDate] == NSOrderedDescending)
-        return SPIMessageSuccessStateUnknown;
-    
-    return gltResponse.successState;
+    return [self gltMatch:gltResponse posRefId:posRefId];
 }
 
 - (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse
@@ -1768,6 +1737,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     dispatch_async(self.queue, ^{
         // First we parse the incoming message
         SPIMessage *m = [SPIMessage fromJson:message secrets:weakSelf.secrets];
+        
         NSString *eventName = m.eventName;
         
         NSLog(@"Received: %@", m.decryptedJson);

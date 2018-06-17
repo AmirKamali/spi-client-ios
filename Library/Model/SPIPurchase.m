@@ -105,7 +105,7 @@
 }
 
 - (NSString *)getAccountType {
-    return [self.message getDataStringValue:@"terminal_ref_id"];
+    return [self.message getDataStringValue:@"account_type"];
 }
 
 - (NSString *)getAuthCode {
@@ -148,10 +148,6 @@
 
 - (NSString *)getResponseValueWithAttribute:(NSString *)attribute {
     return [self.message getDataStringValue:attribute];
-}
-
-- (NSString *)hostResponseText {
-    return [self.message getDataStringValue:@"host_response_text"];
 }
 
 - (NSInteger)getPurchaseAmount {
@@ -285,7 +281,7 @@
 }
 
 - (NSInteger)getAmount {
-    return [self.message getDataIntegerValue:@"amount_purchase"];
+    return [self.message getDataIntegerValue:@"purchase_amount"];
 }
 
 - (NSInteger)getTransactionAmount {
@@ -314,14 +310,6 @@
 
 - (NSString *)getResponseCode {
     return [self.message getDataStringValue:@"host_response_code"];
-}
-
-- (NSDate *)bankDate {
-    NSString *bankDateTimeString = self.getBankDateTimeString;
-    if (!bankDateTimeString)
-        return nil;
-    return [[NSDateFormatter dateNoTimeZoneFormatter]
-            dateFromString:bankDateTimeString];
 }
 
 - (void)copyMerchantReceiptToCustomerReceipt {
@@ -382,36 +370,36 @@
     return self;
 }
 
-- (NSString *)getRefundAmount {
-    return [self.message getDataStringValue:@"refund_amount"];
+- (NSInteger)getRefundAmount {
+    return [self.message getDataIntegerValue:@"refund_amount"];
 }
 
 - (NSString *)getRRN {
     return [self.message getDataStringValue:@"rrn"];
 }
-//
+
 - (NSString *)getCustomerReceipt {
     return [self.message getDataStringValue:@"customer_receipt"];
 }
-//
+
 - (NSString *)getMerchantReceipt {
     return [self.message getDataStringValue:@"merchant_receipt"];
 }
-//
+
 
 - (NSDate *)getSettlementDate {
     NSString *dateStr = [_message getDataStringValue:@"bank_settlement_date"];
     if (dateStr.length == 0) {
         return nil;
     }
-    return [[NSDateFormatter dateNoTimeZoneFormatter] dateFromString:dateStr];
+    return [[NSDateFormatter bankSettleMentFormatter] dateFromString:dateStr];
 }
 
 - (NSString *)getResponseText {
     return [self.message getDataStringValue:@"host_response_text"];
 }
 
-- (NSString *)GetResponseCode {
+- (NSString *)getResponseCode {
     return [self.message getDataStringValue:@"host_response_code"];
 }
 

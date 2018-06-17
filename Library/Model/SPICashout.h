@@ -32,11 +32,11 @@
 
 - (NSString *)getRRN;
 
-- (NSString *)getCashoutAmount;
+- (NSInteger)getCashoutAmount;
 
-- (NSString *)getBankNonCashAmount;
+- (NSInteger)getBankNonCashAmount;
 
-- (NSString *)getBankCashAmount;
+- (NSInteger)getBankCashAmount;
 
 - (NSString *)getCustomerReceipt;
 

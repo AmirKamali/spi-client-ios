@@ -10,7 +10,7 @@
 #import "SPIMessage.h"
 #import "SPIRequestIdHelper.h"
 #import "SPISettlement.h"
-
+#import "NSString+Util.h"
 @implementation SPISettleRequest
 
 - (instancetype)initWithSettleId:(NSString *)settleId {
@@ -116,8 +116,10 @@
                          getDataStringValue:@"settlement_triggered_time"]; // "05:00"
     NSString *dateStr = [self.message
                          getDataStringValue:@"settlement_triggered_date"]; // "05Oct17"
-    return [[NSDateFormatter dateFormaterWithFormatter:@"HH:mm:ssddMMMyy"]
-            dateFromString:[NSString stringWithFormat:@"%@%@", timeStr, dateStr]];
+    NSString *joinedString = [NSString stringWithFormat:@"%@%@", timeStr, dateStr];
+    
+    NSDate *date = [joinedString toDateWithFormat:@"HH:mm:ssddMMMyy"];
+    return date;
 }
 
 - (NSString *)getResponseText {
