@@ -506,12 +506,10 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         
         if ([weakSelf send:purchaseMessage]) {
             [weakSelf.state.txFlowState
-             sent:[NSString stringWithFormat:@"Asked EFTPOS to refund $%.2f",
-                   amountCents / 100.0]];
+             sent:[NSString stringWithFormat:@"Asked EFTPOS to refund $%.2f", amountCents / 100.0]];
         }
         
-        [weakSelf.delegate spi:weakSelf
-   transactionFlowStateChanged:weakSelf.state];
+        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
         completion([[SPIInitiateTxResult alloc]
                     initWithTxResult:YES
                     message:@"Refund initiated"]);
@@ -577,12 +575,9 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                                            @"send cashout request for $%.2f",
                                            ((float)amountCents / 100.0)]];
         if ([weakSelf send:cashoutMsg]) {
-            [weakSelf.state.txFlowState
-             sent:[NSString
-                   stringWithFormat:@"Asked EFTPOS to do cashout for $%.2f",
-                   ((float)amountCents / 100.0)]];
+            [weakSelf.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS to do cashout for $%.2f", ((float)amountCents / 100.0)]];
         }
-        [weakSelf.state setTxFlowState:weakSelf.state.txFlowState];
+        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
         completion([[SPIInitiateTxResult alloc]
                     initWithTxResult:YES
                     message:@"Cashout Initiated"]);
@@ -1137,8 +1132,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         NSString *incomingPosRefId = [m getDataStringValue:@"pos_ref_id"];
         if (weakSelf.state.flow != SPIFlowTransaction ||
             weakSelf.state.txFlowState.isFinished ||
-            ![weakSelf.state.txFlowState.posRefId
-              isEqualToString:incomingPosRefId]) {
+            ![weakSelf.state.txFlowState.posRefId isEqualToString:incomingPosRefId]) {
                 SPILog(@"Received Cashout Response but I was not waiting for one. Incoming Pos Ref ID:  %@", incomingPosRefId);
                 return;
             }
