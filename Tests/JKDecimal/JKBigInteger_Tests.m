@@ -6,22 +6,10 @@
 //  Copyright (c) 2013 Jānis Kiršteins. All rights reserved.
 //
 
-#import "Unit_Tests.h"
+#import "JKBigInteger_Tests.h"
 #import "JKBigInteger.h"
 
-@implementation Unit_Tests
-
-- (void)setUp {
-    [super setUp];
-
-    // Set-up code here.
-}
-
-- (void)tearDown {
-    // Tear-down code here.
-
-    [super tearDown];
-}
+@implementation JKBigInteger_Tests
 
 - (void)testExample {
     JKBigInteger *int1 = [[JKBigInteger alloc] initWithString:@"1000000000000"];
@@ -661,34 +649,6 @@
     JKBigInteger *result = [int1 abs];
 
     XCTAssertEqualObjects([result stringValueWithRadix:8], @"2010551033157653371475176462674400112416524732643107235523210365147262360025326640075727476476416612534", @"Abs test 95 failed");
-}
-
-- (void)testAbs96 {
-    JKBigInteger *int1 = [[JKBigInteger alloc] initWithString:@"-5238967641532378294469" andRadix:10];
-    JKBigInteger *result = [int1 abs];
-
-    XCTAssertEqualObjects([result stringValueWithRadix:10], @"5238967641532378294469", @"Abs test 96 failed");
-}
-
-- (void)testAbs97 {
-    JKBigInteger *int1 = [[JKBigInteger alloc] initWithString:@"-1244616065171772765635056372750113115331571152415417161416451151472547445160621" andRadix:8];
-    JKBigInteger *result = [int1 abs];
-
-    XCTAssertEqualObjects([result stringValueWithRadix:8], @"1244616065171772765635056372750113115331571152415417161416451151472547445160621", @"Abs test 97 failed");
-}
-
-- (void)testAbs98 {
-    JKBigInteger *int1 = [[JKBigInteger alloc] initWithString:@"-1000010010011110010000111011010111001011101001111010011010101110101000111111011110001110000010000000101101011100000011011100100101011010011100111111001000110011001" andRadix:2];
-    JKBigInteger *result = [int1 abs];
-
-    XCTAssertEqualObjects([result stringValueWithRadix:2], @"1000010010011110010000111011010111001011101001111010011010101110101000111111011110001110000010000000101101011100000011011100100101011010011100111111001000110011001", @"Abs test 98 failed");
-}
-
-- (void)testAbs99 {
-    JKBigInteger *int1 = [[JKBigInteger alloc] initWithString:@"-417633206126264631534724405421777061311" andRadix:8];
-    JKBigInteger *result = [int1 abs];
-
-    XCTAssertEqualObjects([result stringValueWithRadix:8], @"417633206126264631534724405421777061311", @"Abs test 99 failed");
 }
 
 - (void)testXor0 {

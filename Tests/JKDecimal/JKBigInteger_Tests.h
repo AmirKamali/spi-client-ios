@@ -8,6 +8,6 @@
 
 #import <XCTest/XCTest.h>
 
-@interface Unit_Tests : XCTestCase
+@interface JKBigInteger_Tests : XCTestCase
 
 @end

@@ -22,24 +22,30 @@
     [client setPosId:posId];
     XCTAssertTrue([client.posId isEqualToString:posId]);
 }
+
 - (void)test_Client_can_set_posAddress {
     NSString *posAddress = @"test";
     SPIClient *client = [[SPIClient alloc] init];
     [client setEftposAddress:posAddress];
-    NSString *generatedAddress = [NSString stringWithFormat:@"ws://%@",posAddress];
+    NSString *generatedAddress =
+    [NSString stringWithFormat:@"ws://%@", posAddress];
     XCTAssertTrue([client.eftposAddress isEqualToString:generatedAddress]);
 }
+
 - (void)testDoUnpair {
+    //Initiate Client and set status
     SPIClient *client = [[SPIClient alloc] init];
     [client setSecretEncKey:@"1" hmacKey:@"2"];
     client.state.status = SPIStatusPairedConnected;
+    
+    //Perform unpair
     [client unpair];
-    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"test expectation"];
-    (void) [XCTWaiter waitForExpectations:@[expectation] timeout:1];
     
+    //Wait & check
+    XCTestExpectation *expectation =
+    [[XCTestExpectation alloc] initWithDescription:@"test expectation"];
+    (void)[XCTWaiter waitForExpectations:@[ expectation ] timeout:1];
     XCTAssertEqual(client.state.status, SPIStatusUnpaired);
-    
 }
-
 
 @end

@@ -17,18 +17,20 @@
 
 @implementation SPIPurchaseTest
 
--(void)testPurchaseRequestV1_adds_all_fields_to_dataDictionary {
+- (void)testPurchaseRequestV1_adds_all_fields_to_dataDictionary {
     NSString *posRefId = @"test";
     int amountCents = 10;
-
-    SPIPurchaseRequest *request = [SPIPurchaseHelper createPurchaseRequest:amountCents purchaseId:posRefId];
+    
+    SPIPurchaseRequest *request =
+    [SPIPurchaseHelper createPurchaseRequest:amountCents
+                                  purchaseId:posRefId];
     
     SPIMessage *msg = [request toMessage];
     
-    XCTAssertEqual([msg getDataStringValue:@"pos_ref_id"],posRefId);
-    XCTAssertEqual([msg getDataIntegerValue:@"purchase_amount"],amountCents );
+    XCTAssertEqual([msg getDataStringValue:@"pos_ref_id"], posRefId);
+    XCTAssertEqual([msg getDataIntegerValue:@"purchase_amount"], amountCents);
 }
--(void)testRequestPurchaseV2_adds_all_fields_to_dataDictionary {
+- (void)testRequestPurchaseV2_adds_all_fields_to_dataDictionary {
     NSString *posRefId = @"test";
     int amountCents = 10;
     int tipamount = 10;
@@ -45,7 +47,7 @@
     XCTAssertNotNil([request amountSummary]);
 }
 
--(void)testPurchase_response_can_be_populated {
+- (void)testPurchase_response_can_be_populated {
     NSString *jsonStr = @"{\"data\":{\"account_type\":\"CREDIT\",\"auth_code\":\"328885\",\"bank_date\":\"18062018\",\"bank_noncash_amount\":1000,\"bank_settlement_date\":\"18062018\",\"bank_time\":\"000145\",\"card_entry\":\"EMV_CTLS\",\"currency\":\"AUD\",\"customer_receipt\":\"EFTPOS FROM WESTPAC\\r\\nMerchant4\\r\\n213 Miller Street\\r\\nSydney 2060\\r\\nAustralia\\r\\n\\r\\nTIME 18JUN18   00:01\\r\\nMID         22341845\\r\\nTSP     100312348845\\r\\nRRN     180618000149\\r\\nMasterCard      \\r\\nMastercard(C)     CR\\r\\nCARD............2797\\r\\nAID   A0000000041010\\r\\nTVR       0000000000\\r\\nAUTH          328885\\r\\n\\r\\nPURCHASE    AUD10.00\\r\\n\\r\\n   (000) APPROVED\\r\\n\\r\\n  *CUSTOMER COPY*\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\",\"customer_receipt_printed\":true,\"emv_actioncode\":\"ARP\",\"emv_actioncode_values\":\"688E386C083F4E690012\",\"emv_pix\":\"1010\",\"emv_rid\":\"A000000004\",\"emv_tsi\":\"E800\",\"emv_tvr\":\"0000000000\",\"expiry_date\":\"0722\",\"host_response_code\":\"000\",\"host_response_text\":\"APPROVED\",\"informative_text\":\"                \",\"masked_pan\":\"............2797\",\"merchant_acquirer\":\"EFTPOS FROM WESTPAC\",\"merchant_addr\":\"213 Miller Street\",\"merchant_city\":\"Sydney\",\"merchant_country\":\"Australia\",\"merchant_id\":\"22341845\",\"merchant_name\":\"Merchant4\",\"merchant_postcode\":\"2060\",\"merchant_receipt\":\"EFTPOS FROM WESTPAC\\r\\nMerchant4\\r\\n213 Miller Street\\r\\nSydney 2060\\r\\nAustralia\\r\\n\\r\\nTIME 18JUN18   00:01\\r\\nMID         22341845\\r\\nTSP     100312348845\\r\\nRRN     180618000149\\r\\nMasterCard      \\r\\nMastercard(C)     CR\\r\\nCARD............2797\\r\\nAID   A0000000041010\\r\\nTVR       0000000000\\r\\nAUTH          328885\\r\\n\\r\\nPURCHASE    AUD10.00\\r\\n\\r\\n   (000) APPROVED\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\",\"merchant_receipt_printed\":true,\"online_indicator\":\"Y\",\"pos_ref_id\":\"kebab-18-06-2018-00-01-45\",\"purchase_amount\":1000,\"rrn\":\"180618000149\",\"scheme_app_name\":\"MasterCard\",\"scheme_name\":\"MasterCard\",\"stan\":\"000149\",\"success\":true,\"terminal_id\":\"100312348845\",\"terminal_ref_id\":\"12348845_18062018000208\",\"tip_amount\":0,\"transaction_type\":\"PURCHASE\"},\"datetime\":\"2018-06-18T00:02:08.107\",\"event\":\"purchase_response\",\"id\":\"prchs4\"}";
     NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:[jsonStr dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
     
@@ -74,7 +76,8 @@
     XCTAssertEqual([response wasMerchantReceiptPrinted], true);
     
 }
--(void)testClient_CanInitiate_Purchase_request{
+
+- (void)testClient_CanInitiate_PurchaseV2_request{
     NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
     NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
     SPIClient *client = [[SPIClient alloc] init];
@@ -84,7 +87,87 @@
         XCTAssertNotNil(result);
     }];
 }
--(void)testClient_CanHandle_Purchase_response{
+
+
+- (void)testClient_CanInitiate_Purchase_request{
+    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
+    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
+    SPIClient *client = [[SPIClient alloc] init];
+    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    client.state.status = SPIStatusPairedConnected;
+    [client initiatePurchaseTx:@"test" amountCents:10 completion:^(SPIInitiateTxResult *result) {
+        XCTAssertNotNil(result);
+    }];
+}
+
+- (void)testClient_CanInitiate_MotoPurchase_request{
+    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
+    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
+    SPIClient *client = [[SPIClient alloc] init];
+    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    client.state.status = SPIStatusPairedConnected;
+    [client initiateMotoPurchaseTx:@"test" amountCents:19 completion:^(SPIInitiateTxResult *result) {
+        XCTAssertNotNil(result);
+    }];
+}
+
+- (void)testClient_CanInitiate_CashOutOnly_request{
+    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
+    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
+    SPIClient *client = [[SPIClient alloc] init];
+    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    client.state.status = SPIStatusPairedConnected;
+    [client initiateCashoutOnlyTx:@"test" amountCents:10 completion:^(SPIInitiateTxResult *result) {
+        XCTAssertNotNil(result);
+    }];
+}
+
+- (void)testClient_CanInitiate_settleEnquiry_request{
+    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
+    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
+    SPIClient *client = [[SPIClient alloc] init];
+    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    client.state.status = SPIStatusPairedConnected;
+    [client initiateSettlementEnquiry:@"test" completion:^(SPIInitiateTxResult *result) {
+        XCTAssertNotNil(result);
+    }];
+}
+
+
+- (void)testClient_CanInitiate_settlement_request{
+    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
+    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
+    SPIClient *client = [[SPIClient alloc] init];
+    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    client.state.status = SPIStatusPairedConnected;
+    [client initiateSettleTx:@"test" completion:^(SPIInitiateTxResult *result) {
+        XCTAssertNotNil(result);
+    }];
+}
+
+- (void)testClient_CanInitiate_recovery_request{
+    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
+    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
+    SPIClient *client = [[SPIClient alloc] init];
+    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    client.state.status = SPIStatusPairedConnected;
+    [client initiateRecovery:@"test" transactionType:SPITransactionTypePurchase completion:^(SPIInitiateTxResult *result) {
+        XCTAssertNotNil(result);
+    }];
+}
+
+- (void)testClient_CanInitiate_cancel_transaction{
+    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
+    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
+    SPIClient *client = [[SPIClient alloc] init];
+    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    client.state.status = SPIStatusPairedConnected;
+    [client initiateRefundTx:@"test" amountCents:10 completion:^(SPIInitiateTxResult *result) {
+        XCTAssertNotNil(result);
+    }];
+}
+
+- (void)testClient_CanHandle_Purchase_response{
     NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
     NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
     SPIClient *client = [[SPIClient alloc] init];

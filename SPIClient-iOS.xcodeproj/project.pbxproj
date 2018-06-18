@@ -104,9 +104,10 @@
 		29468BE820D6BDA40095D3EC /* RNCryptorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 29468BDC20D6BD5F0095D3EC /* RNCryptorTests.m */; };
 		29468BEA20D6BDB80095D3EC /* RNCryptorTestHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 29468BDE20D6BD600095D3EC /* RNCryptorTestHelpers.m */; };
 		29468BEE20D6BE650095D3EC /* JKBigInteger_iOSTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 29468BEC20D6BE650095D3EC /* JKBigInteger_iOSTests.m */; };
-		29468BF320D6BE7C0095D3EC /* Unit_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 29468BF120D6BE7C0095D3EC /* Unit_Tests.m */; };
+		29468BF320D6BE7C0095D3EC /* JKBigInteger_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 29468BF120D6BE7C0095D3EC /* JKBigInteger_Tests.m */; };
 		29468C0C20D6CCB80095D3EC /* SPICashoutOnlyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 29468C0B20D6CCB80095D3EC /* SPICashoutOnlyTests.m */; };
 		29468C0E20D6DF790095D3EC /* SPIClientTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 29468C0D20D6DF790095D3EC /* SPIClientTests.m */; };
+		29468C2820D738360095D3EC /* PongHelperTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 29468C2720D738360095D3EC /* PongHelperTest.m */; };
 		29534F5B20BD991F0048C0E0 /* SPICashout.h in Headers */ = {isa = PBXBuildFile; fileRef = 29534F5920BD991F0048C0E0 /* SPICashout.h */; };
 		29534F5C20BD991F0048C0E0 /* SPICashout.m in Sources */ = {isa = PBXBuildFile; fileRef = 29534F5A20BD991F0048C0E0 /* SPICashout.m */; };
 		29854DCF20D02D7000ABA629 /* SPIPurchaseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 29854DCE20D02D7000ABA629 /* SPIPurchaseTests.m */; };
@@ -208,10 +209,11 @@
 		29468BDF20D6BD600095D3EC /* XCTestCase+RNCryptorVectorTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "XCTestCase+RNCryptorVectorTests.m"; sourceTree = "<group>"; };
 		29468BE020D6BD600095D3EC /* XCTestCase+RNCryptorVectorTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "XCTestCase+RNCryptorVectorTests.h"; sourceTree = "<group>"; };
 		29468BEC20D6BE650095D3EC /* JKBigInteger_iOSTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JKBigInteger_iOSTests.m; sourceTree = "<group>"; };
-		29468BF020D6BE7C0095D3EC /* Unit_Tests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unit_Tests.h; sourceTree = "<group>"; };
-		29468BF120D6BE7C0095D3EC /* Unit_Tests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Unit_Tests.m; sourceTree = "<group>"; };
+		29468BF020D6BE7C0095D3EC /* JKBigInteger_Tests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JKBigInteger_Tests.h; sourceTree = "<group>"; };
+		29468BF120D6BE7C0095D3EC /* JKBigInteger_Tests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JKBigInteger_Tests.m; sourceTree = "<group>"; };
 		29468C0B20D6CCB80095D3EC /* SPICashoutOnlyTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPICashoutOnlyTests.m; sourceTree = "<group>"; };
 		29468C0D20D6DF790095D3EC /* SPIClientTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIClientTests.m; sourceTree = "<group>"; };
+		29468C2720D738360095D3EC /* PongHelperTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PongHelperTest.m; sourceTree = "<group>"; };
 		29534F5920BD991F0048C0E0 /* SPICashout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPICashout.h; sourceTree = "<group>"; };
 		29534F5A20BD991F0048C0E0 /* SPICashout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPICashout.m; sourceTree = "<group>"; };
 		29854DCE20D02D7000ABA629 /* SPIPurchaseTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIPurchaseTests.m; sourceTree = "<group>"; };
@@ -359,6 +361,7 @@
 				29468BD820D6B1A90095D3EC /* SPIRefundTests.m */,
 				29468BDA20D6B2CB0095D3EC /* SPISettlementTests.m */,
 				29468C0D20D6DF790095D3EC /* SPIClientTests.m */,
+				29468C2720D738360095D3EC /* PongHelperTest.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -458,8 +461,8 @@
 		29468BEB20D6BE510095D3EC /* JKDecimal */ = {
 			isa = PBXGroup;
 			children = (
-				29468BF020D6BE7C0095D3EC /* Unit_Tests.h */,
-				29468BF120D6BE7C0095D3EC /* Unit_Tests.m */,
+				29468BF020D6BE7C0095D3EC /* JKBigInteger_Tests.h */,
+				29468BF120D6BE7C0095D3EC /* JKBigInteger_Tests.m */,
 				29468BEC20D6BE650095D3EC /* JKBigInteger_iOSTests.m */,
 			);
 			path = JKDecimal;
@@ -702,6 +705,7 @@
 				273E9B07205A30F90006ED5C /* SPIPairingHelper.m in Sources */,
 				273E9B04205A30F90006ED5C /* SPIMessage.m in Sources */,
 				279BB732205B581E005ADECB /* tommath.c in Sources */,
+				29468C2820D738360095D3EC /* PongHelperTest.m in Sources */,
 				29468C0C20D6CCB80095D3EC /* SPICashoutOnlyTests.m in Sources */,
 				29854DCF20D02D7000ABA629 /* SPIPurchaseTests.m in Sources */,
 				273E9B38205A315A0006ED5C /* NSDateFormatterUtilTest.m in Sources */,
@@ -729,7 +733,7 @@
 				29468BE620D6BD900095D3EC /* XCTestCase+RNCryptorVectorTests.m in Sources */,
 				273E9B0A205A30F90006ED5C /* SPIPairing.m in Sources */,
 				279BB737205B581E005ADECB /* JKBigInteger.m in Sources */,
-				29468BF320D6BE7C0095D3EC /* Unit_Tests.m in Sources */,
+				29468BF320D6BE7C0095D3EC /* JKBigInteger_Tests.m in Sources */,
 				273E9B3D205A31640006ED5C /* SPIDiffieHellmanTest.m in Sources */,
 				273E9AEB205A30EC0006ED5C /* SPICrypto.m in Sources */,
 				273E9B11205A30F90006ED5C /* SPIPurchase.m in Sources */,
