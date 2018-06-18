@@ -56,15 +56,15 @@
     return [self.message getDataStringValue:@"rrn"];
 }
 
-- (NSInteger )getCashoutAmount {
+- (NSInteger)getCashoutAmount {
     return [self.message getDataIntegerValue:@"cash_amount"];
 }
 
-- (NSInteger )getBankNonCashAmount {
+- (NSInteger)getBankNonCashAmount {
     return [self.message getDataIntegerValue:@"bank_noncash_amount"];
 }
 
-- (NSInteger )getBankCashAmount {
+- (NSInteger)getBankCashAmount {
     return [self.message getDataIntegerValue:@"bank_cash_amount"];
 }
 

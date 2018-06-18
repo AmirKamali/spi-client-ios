@@ -20,7 +20,7 @@
     
     if (self) {
         _config = [[SPIConfig alloc] init];
-            _posRefId = posRefId;
+        _posRefId = posRefId;
         _purchaseAmount = amountCents;
         
         // Library Backwards Compatibility
@@ -357,7 +357,6 @@
 @implementation SPIRefundResponse : NSObject
 
 - (instancetype)initWithMessage:(SPIMessage *)message {
-    
     self = [super init];
     
     if (self) {
@@ -385,7 +384,6 @@
 - (NSString *)getMerchantReceipt {
     return [self.message getDataStringValue:@"merchant_receipt"];
 }
-
 
 - (NSDate *)getSettlementDate {
     NSString *dateStr = [_message getDataStringValue:@"bank_settlement_date"];
@@ -462,7 +460,6 @@
 @implementation SPISignatureRequired
 
 - (instancetype)initWithMessage:(SPIMessage *)message {
-    
     self = [super init];
     
     if (self) {
@@ -492,13 +489,11 @@
 
 - (instancetype)initWithSignatureRequiredRequestId:
 (NSString *)signatureRequiredRequestId {
-    
     self = [super init];
     
     if (self) {
         _signatureRequiredRequestId = [signatureRequiredRequestId copy];
     }
-    
     return self;
 }
 
@@ -515,13 +510,10 @@
 
 - (instancetype)initWithSignatureRequiredRequestId:
 (NSString *)signatureRequiredRequestId {
-    
     self = [super init];
-    
     if (self) {
         _signatureRequiredRequestId = [signatureRequiredRequestId copy];
     }
-    
     return self;
 }
 

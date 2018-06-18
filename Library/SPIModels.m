@@ -6,9 +6,9 @@
 //  Copyright © 2018 Assembly Payments. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 #import "NSObject+Util.h"
 #import "SPIModels.h"
-#import <Foundation/Foundation.h>
 
 @implementation SPIInitiateTxResult
 

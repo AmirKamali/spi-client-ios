@@ -6,11 +6,11 @@
 //  Copyright © 2017 Assembly Payments. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 #import "SPIConnection.h"
 #import "SPIModels.h"
 #import "SPIPurchase.h"
 #import "SPISettlement.h"
-#import <Foundation/Foundation.h>
 
 @class SPIClient;
 @class SPIPreAuth;
@@ -18,8 +18,8 @@
 
 @interface SPIConfig : NSObject
 
-@property(nonatomic) BOOL promptForCustomerCopyOnEftpos;
-@property(nonatomic) BOOL signatureFlowOnEftpos;
+@property (nonatomic) BOOL promptForCustomerCopyOnEftpos;
+@property (nonatomic) BOOL signatureFlowOnEftpos;
 
 - (void)addReceiptConfig:(NSMutableDictionary *)data;
 
@@ -76,22 +76,22 @@ secretsChanged:(SPISecrets *)secrets
 @interface SPIClient : NSObject
 
 // The current state.
-@property(nonatomic, readonly) SPIState *state;
+@property (nonatomic, readonly) SPIState *state;
 
 // The IP address of the target EFTPOS. Automatically prepends ws://
 // Allows you to set the PIN pad address. Sometimes the PIN pad might change IP
 // address (we recommend reserving static IPs if possible). Either way you need
 // to allow your User to enter the IP address of the PIN pad.
-@property(nonatomic, copy) NSString *eftposAddress;
+@property (nonatomic, copy) NSString *eftposAddress;
 
 // Uppercase AlphaNumeric string that Indentifies your POS instance. This value
 // is displayed on the EFTPOS screen. Can only be called set in the Unpaired
 // state.
-@property(nonatomic, copy) NSString *posId;
+@property (nonatomic, copy) NSString *posId;
 
-@property(nonatomic, weak) id<SPIDelegate> delegate;
+@property (nonatomic, weak) id<SPIDelegate> delegate;
 
-@property(nonatomic, readonly) SPIConfig *config;
+@property (nonatomic, readonly) SPIConfig *config;
 /**
  * If you provide secrets, it will start in PairedConnecting status; Otherwise
  * it will start in Unpaired status.
@@ -310,7 +310,8 @@ secretsChanged:(SPISecrets *)secrets
                       expectedType:(SPITransactionType)expectedType
                     expectedAmount:(NSInteger)expectedAmount
                        requestDate:(NSDate *)requestDate
-                          posRefId:(NSString *)posRefId  DEPRECATED_MSG_ATTRIBUTE("Use GltMatch(GetLastTransactionResponse gltResponse, string posRefId, TransactionType expectedType)");;
+                          posRefId:(NSString *)posRefId DEPRECATED_MSG_ATTRIBUTE("Use GltMatch(GetLastTransactionResponse gltResponse, string posRefId, TransactionType expectedType)");
+;
 
 - (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse
                           posRefId:(NSString *)posRefId;

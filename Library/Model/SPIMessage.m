@@ -13,57 +13,57 @@
 #import "SPIMessage.h"
 #import "SPISecrets.h"
 
-NSString * const SPIPairRequestKey  = @"pair_request";
-NSString * const SPIKeyRequestKey   = @"key_request";
-NSString * const SPIKeyResponseKey  = @"key_response";
-NSString * const SPIKeyCheckKey     = @"key_check";
-NSString * const SPIPairResponseKey = @"pair_response";
-NSString * const SPIDropKeysAdviceKey  = @"drop_keys";
+NSString *const SPIPairRequestKey = @"pair_request";
+NSString *const SPIKeyRequestKey = @"key_request";
+NSString *const SPIKeyResponseKey = @"key_response";
+NSString *const SPIKeyCheckKey = @"key_check";
+NSString *const SPIPairResponseKey = @"pair_response";
+NSString *const SPIDropKeysAdviceKey = @"drop_keys";
 
-NSString * const SPILoginRequestKey  = @"login_request";
-NSString * const SPILoginResponseKey = @"login_response";
+NSString *const SPILoginRequestKey = @"login_request";
+NSString *const SPILoginResponseKey = @"login_response";
 
-NSString * const SPIPingKey = @"ping";
-NSString * const SPIPongKey = @"pong";
+NSString *const SPIPingKey = @"ping";
+NSString *const SPIPongKey = @"pong";
 
-NSString * const SPIPurchaseRequestKey            = @"purchase";
-NSString * const SPIPurchaseResponseKey           = @"purchase_response";
-NSString * const SPICancelTransactionRequestKey   = @"cancel_transaction";
-NSString * const SPIGetLastTransactionRequestKey  = @"get_last_transaction";
-NSString * const SPIGetLastTransactionResponseKey = @"last_transaction";
+NSString *const SPIPurchaseRequestKey = @"purchase";
+NSString *const SPIPurchaseResponseKey = @"purchase_response";
+NSString *const SPICancelTransactionRequestKey = @"cancel_transaction";
+NSString *const SPIGetLastTransactionRequestKey = @"get_last_transaction";
+NSString *const SPIGetLastTransactionResponseKey = @"last_transaction";
 
-NSString * const SPIRefundRequestKey     = @"refund";
-NSString * const SPIRefundResponseKey    = @"refund_response";
-NSString * const SPISignatureRequiredKey = @"signature_required";
-NSString * const SPISignatureDeclinedKey = @"signature_decline";
-NSString * const SPISignatureAcceptedKey = @"signature_accept";
+NSString *const SPIRefundRequestKey = @"refund";
+NSString *const SPIRefundResponseKey = @"refund_response";
+NSString *const SPISignatureRequiredKey = @"signature_required";
+NSString *const SPISignatureDeclinedKey = @"signature_decline";
+NSString *const SPISignatureAcceptedKey = @"signature_accept";
 
-NSString * const SPIAuthCodeRequiredKey = @"authorisation_code_required";
-NSString * const SPIAuthCodeAdviceKey = @"authorisation_code_advice";
+NSString *const SPIAuthCodeRequiredKey = @"authorisation_code_required";
+NSString *const SPIAuthCodeAdviceKey = @"authorisation_code_advice";
 
-NSString * const SPICashoutOnlyRequestKey = @"cash";
-NSString * const SPICashoutOnlyResponseKey = @"cash_response";
+NSString *const SPICashoutOnlyRequestKey = @"cash";
+NSString *const SPICashoutOnlyResponseKey = @"cash_response";
 
-NSString * const SPIMotoPurchaseRequestKey = @"moto_purchase";
-NSString * const SPIMotoPurchaseResponseKey = @"moto_purchase_response";
+NSString *const SPIMotoPurchaseRequestKey = @"moto_purchase";
+NSString *const SPIMotoPurchaseResponseKey = @"moto_purchase_response";
 
-NSString * const SPISettleRequestKey  = @"settle";
-NSString * const SPISettleResponseKey = @"settle_response";
-NSString * const SPISettlementEnquiryRequestKey = @"settlement_enquiry";
-NSString * const SPISettlementEnquiryResponseKey = @"settlement_enquiry_response";
+NSString *const SPISettleRequestKey = @"settle";
+NSString *const SPISettleResponseKey = @"settle_response";
+NSString *const SPISettlementEnquiryRequestKey = @"settlement_enquiry";
+NSString *const SPISettlementEnquiryResponseKey = @"settlement_enquiry_response";
 
-NSString * const SPIKeyRollRequestKey  = @"request_use_next_keys";
-NSString * const SPIKeyRollResponseKey = @"response_use_next_keys";
+NSString *const SPIKeyRollRequestKey = @"request_use_next_keys";
+NSString *const SPIKeyRollResponseKey = @"response_use_next_keys";
 
-NSString * const SPIInvalidMessageId     = @"_";
-NSString * const SPIInvalidHmacSignature = @"_INVALID_SIGNATURE_";
-NSString * const SPIEventError           = @"error";
+NSString *const SPIInvalidMessageId = @"_";
+NSString *const SPIInvalidHmacSignature = @"_INVALID_SIGNATURE_";
+NSString *const SPIEventError = @"error";
 
-NSString * const SPIPayAtTableGetTableConfigKey = @"get_table_config"; // incoming. When eftpos wants to ask us for P@T configuration.
-NSString * const SPIPayAtTableSetTableConfigKey = @"set_table_config"; // outgoing. When we want to instruct eftpos with the P@T configuration.
-NSString * const SPIPayAtTableGetBillDetailsKey = @"get_bill_details"; // incoming. When eftpos wants to aretrieve the bill for a table.
-NSString * const SPIPayAtTableBillDetailsKey = @"bill_details";        // outgoing. We reply with this when eftpos requests to us get_bill_details.
-NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incoming. When the eftpos advices
+NSString *const SPIPayAtTableGetTableConfigKey = @"get_table_config"; // incoming. When eftpos wants to ask us for P@T configuration.
+NSString *const SPIPayAtTableSetTableConfigKey = @"set_table_config"; // outgoing. When we want to instruct eftpos with the P@T configuration.
+NSString *const SPIPayAtTableGetBillDetailsKey = @"get_bill_details"; // incoming. When eftpos wants to aretrieve the bill for a table.
+NSString *const SPIPayAtTableBillDetailsKey = @"bill_details";        // outgoing. We reply with this when eftpos requests to us get_bill_details.
+NSString *const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incoming. When the eftpos advices
 
 @implementation SPIMessageStamp
 
@@ -140,7 +140,8 @@ NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomi
             _successState = SPIMessageSuccessStateUnknown;
         } else {
             _successState =
-            [self getDataBoolValue:@"success" defaultIfNotFound:false]
+            [self getDataBoolValue:@"success"
+                 defaultIfNotFound:false]
             ? SPIMessageSuccessStateSuccess
             : SPIMessageSuccessStateFailed;
         }
@@ -176,7 +177,8 @@ NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomi
     }
     
     NSString *messageEnvelopeString =
-    [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    [[NSString alloc] initWithData:jsonData
+                          encoding:NSUTF8StringEncoding];
     self.decryptedJson = messageEnvelopeString;
     
     if (!self.needsEncryption) {
@@ -186,7 +188,8 @@ NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomi
     NSString *encMsg = [SPICrypto aesEncryptMessage:messageEnvelopeString
                                                 key:stamp.secrets.encKeyData];
     NSString *hmacSig =
-    [SPICrypto hmacSignatureMessage:encMsg key:stamp.secrets.hmacKeyData];
+    [SPICrypto hmacSignatureMessage:encMsg
+                                key:stamp.secrets.hmacKeyData];
     SPIMessageEnvelope *encrMessageEnvelope =
     [[SPIMessageEnvelope alloc] initWithEnc:encMsg
                                        hmac:hmacSig
@@ -204,7 +207,8 @@ NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomi
     }
     
     return
-    [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    [[NSString alloc] initWithData:jsonData
+                          encoding:NSUTF8StringEncoding];
 }
 
 - (NSString *)getDataStringValue:(NSString *)attribute {
@@ -265,7 +269,8 @@ NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomi
     NSString *hmac = json[@"hmac"];
     
     NSString *hmacSig =
-    [SPICrypto hmacSignatureMessage:enc key:secrets.hmacKeyData];
+    [SPICrypto hmacSignatureMessage:enc
+                                key:secrets.hmacKeyData];
     
     if (![hmacSig isEqualToString:hmac]) {
         return [[SPIMessage alloc] initWithMessageId:SPIInvalidMessageId
@@ -275,9 +280,10 @@ NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomi
     }
     
     NSString *aesDecryptedJson =
-    [SPICrypto aesDecryptEncMessage:enc key:secrets.encKeyData];
+    [SPICrypto aesDecryptEncMessage:enc
+                                key:secrets.encKeyData];
     SPIMessage *m;
-    if (aesDecryptedJson != nil){
+    if (aesDecryptedJson != nil) {
         NSData *decryptedJsonData = [aesDecryptedJson dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *newJson = [NSJSONSerialization JSONObjectWithData:decryptedJsonData
                                                                 options:NSJSONReadingMutableLeaves
@@ -290,8 +296,8 @@ NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomi
         }
         
         NSDictionary *msgDecryptedJson = (NSDictionary *)newJson[@"message"];
-        m  = [[SPIMessage alloc] initWithDict:msgDecryptedJson];
-    }else{
+        m = [[SPIMessage alloc] initWithDict:msgDecryptedJson];
+    } else {
         m = [[SPIMessage alloc] init];
     }
     

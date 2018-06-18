@@ -30,43 +30,43 @@
 
 // The current status of this SPI instance. Unpaired, PairedConnecting or
 // PairedConnected.
-@property(nonatomic, strong) SPIState *state;
+@property (nonatomic, strong) SPIState *state;
 
-@property(nonatomic, strong) id<SPIConnection> connection;
+@property (nonatomic, strong) id<SPIConnection> connection;
 
-@property(nonatomic, strong) SPIMessageStamp *spiMessageStamp;
-@property(nonatomic, strong) SPISecrets *secrets;
-@property(nonatomic, strong) SPIPayAtTable *spiPat;
-@property(nonatomic, strong) SPIPreAuth *spiPreauth;
+@property (nonatomic, strong) SPIMessageStamp *spiMessageStamp;
+@property (nonatomic, strong) SPISecrets *secrets;
+@property (nonatomic, strong) SPIPayAtTable *spiPat;
+@property (nonatomic, strong) SPIPreAuth *spiPreauth;
 
-@property(nonatomic, strong) SPIGCDTimer *pingTimer;
-@property(nonatomic, strong) SPIGCDTimer *disconnectIfNeededSourceTimer;
-@property(nonatomic, strong) SPIGCDTimer *transactionMonitoringTimer;
+@property (nonatomic, strong) SPIGCDTimer *pingTimer;
+@property (nonatomic, strong) SPIGCDTimer *disconnectIfNeededSourceTimer;
+@property (nonatomic, strong) SPIGCDTimer *transactionMonitoringTimer;
 //@property (nonatomic, strong) SPIGCDTimer *tryToReconnectTimer;
 
-@property(nonatomic, strong) SPIMessage *mostRecentPingSent;
-@property(nonatomic) NSTimeInterval mostRecentPingSentTime;
-@property(nonatomic, strong) SPIMessage *mostRecentPongReceived;
-@property(nonatomic, assign) NSInteger missedPongsCount;
+@property (nonatomic, strong) SPIMessage *mostRecentPingSent;
+@property (nonatomic) NSTimeInterval mostRecentPingSentTime;
+@property (nonatomic, strong) SPIMessage *mostRecentPongReceived;
+@property (nonatomic, assign) NSInteger missedPongsCount;
 
 //@property (nonatomic, strong) SPILoginResponse     *mostRecentLoginResponse;
-@property(nonatomic, strong)
+@property (nonatomic, strong)
 SPISignatureRequired *mostRecentSignatureRequiredReceived;
 
-@property(nonatomic, assign) BOOL started;
+@property (nonatomic, assign) BOOL started;
 
-@property(nonatomic, strong) dispatch_queue_t queue;
+@property (nonatomic, strong) dispatch_queue_t queue;
 
 @end
 
 static NSTimeInterval txMonitorCheckFrequency = 1; // How often do we check on the tx state from our tx monitoring thread
 
-static NSTimeInterval checkOnTxFrequency = 20; // How often do we proactively check on the tx status by calling get_last_transaction
-static NSTimeInterval maxWaitForCancelTx = 10; // How long do we wait for cancel to return before giving up completely.
+static NSTimeInterval checkOnTxFrequency = 20;             // How often do we proactively check on the tx status by calling get_last_transaction
+static NSTimeInterval maxWaitForCancelTx = 10;             // How long do we wait for cancel to return before giving up completely.
 static NSTimeInterval txServerAdjustmentTimeInterval = -5; // Adjust server time
 
-static NSTimeInterval pongTimeout = 5; // How long do we wait for a pong to come back
-static NSTimeInterval pingFrequency = 18; // How often we send pings
+static NSTimeInterval pongTimeout = 5;        // How long do we wait for a pong to come back
+static NSTimeInterval pingFrequency = 18;     // How often we send pings
 static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before disconnecting
 
 @implementation SPIClient
@@ -551,7 +551,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     __weak __typeof(&*self) weakSelf = self;
     
     if (weakSelf.state.status == SPIStatusUnpaired) {
-        return completion([[SPIInitiateTxResult alloc]  initWithTxResult:NO  message:@"Not paired"]);
+        return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
     }
     dispatch_async(self.queue, ^{
         if (weakSelf.state.flow != SPIFlowIdle) {
@@ -670,7 +670,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         
         if (weakSelf.state.flow != SPIFlowTransaction ||
             weakSelf.state.txFlowState.isFinished) {
-            SPILog(@"Asked to cancel transaction but I was not in the middle of "
+            SPILog(
+                   @"Asked to cancel transaction but I was not in the middle of "
                    @"one.");
             return;
         }
@@ -895,9 +896,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     NSLog(@"connecting %@ %@", self.posId, self.eftposAddress);
     
     if (!self.secrets) {
-        SPILog(@"Select the \"Pair with POS\" option on the EFTPOS terminal "
-               @"screen. Once selected, the EFTPOS terminal screen should read "
-               @"\"Start POS Pairing\"");
+        SPILog(@"Select the \"Pair with POS\" option on the EFTPOS terminal screen. Once selected, the EFTPOS terminal screen should read \"Start POS Pairing\"");
     }
     
     // Actually do connection.
@@ -966,7 +965,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     self.state.pairingFlowState.isAwaitingCheckFromEftpos = YES;
     self.state.pairingFlowState.isAwaitingCheckFromPos = YES;
     self.state.pairingFlowState.message = [NSString
-                                           stringWithFormat:@"Confirm that the following Code:\n\n%@\n\n is "
+                                           stringWithFormat:
+                                           @"Confirm that the following Code:\n\n%@\n\n is "
                                            @"showing on the terminal",
                                            keyCheck.confirmationCode];
     [self.delegate spi:self pairingFlowStateChanged:self.state];
@@ -986,16 +986,19 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     
     if (pairResponse.isSuccess) {
         if (self.state.pairingFlowState.isAwaitingCheckFromPos) {
-            SPILog(@"Got Pair Confirm from Eftpos, but still waiting for use "
+            SPILog(
+                   @"Got Pair Confirm from Eftpos, but still waiting for use "
                    @"to confirm from POS.");
             // Still Waiting for User to say yes on POS
             self.state.pairingFlowState.message = [NSString
-                                                   stringWithFormat:@"Confirm that the following Code:\n\n%@\n\n "
+                                                   stringWithFormat:
+                                                   @"Confirm that the following Code:\n\n%@\n\n "
                                                    @"is what the EFTPOS showed",
                                                    self.state.pairingFlowState.confirmationCode];
             [self.delegate spi:self pairingFlowStateChanged:self.state];
         } else {
-            SPILog(@"Got Pair Confirm from Eftpos, and already had confirm "
+            SPILog(
+                   @"Got Pair Confirm from Eftpos, and already had confirm "
                    @"from POS. Now just waiting for first pong.");
             [self onPairingSuccess];
         }
@@ -1062,7 +1065,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     SPIKeyRollingResult *krRes =
     [SPIKeyRollingHelper performKeyRollingWithMessage:m
                                        currentSecrets:self.secrets];
-    self.secrets = krRes.secrets; // and update our secrets with them
+    self.secrets = krRes.secrets;                // and update our secrets with them
     self.spiMessageStamp.secrets = self.secrets; // and our stamp
     [self send:krRes.keyRollingConfirmation];
     [self.delegate spi:self secretsChanged:self.secrets state:self.state];
@@ -1085,15 +1088,15 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     NSLog(@"handleSignatureRequired");
     __weak __typeof(&*self) weakSelf = self;
     dispatch_async(self.queue, ^{
-          NSString *incomingPosRefId = [m getDataStringValue:@"pos_ref_id"];
+        NSString *incomingPosRefId = [m getDataStringValue:@"pos_ref_id"];
         if (weakSelf.state.flow != SPIFlowTransaction ||
             weakSelf.state.txFlowState.isFinished ||
             ![weakSelf.state.txFlowState.posRefId isEqualToString:incomingPosRefId]) {
-              SPILog(@"Received signature required but I was not waiting for one. %@", m.decryptedJson);
-              return;
-          }
-        [self.state.txFlowState signatureRequired:[[SPISignatureRequired alloc] initWithMessage:m]  msg:@"Ask customer to sign the receipt"];
-      });
+            SPILog(@"Received signature required but I was not waiting for one. %@", m.decryptedJson);
+            return;
+        }
+        [self.state.txFlowState signatureRequired:[[SPISignatureRequired alloc] initWithMessage:m] msg:@"Ask customer to sign the receipt"];
+    });
     
     [self.delegate spi:self transactionFlowStateChanged:self.state.copy];
 }
@@ -1107,10 +1110,10 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         if (weakSelf.state.flow != SPIFlowTransaction ||
             weakSelf.state.txFlowState.isFinished ||
             ![weakSelf.state.txFlowState.posRefId isEqualToString:incomingPosRefId]) {
-                SPILog(@"Received Auth Code Required but I was not waiting for one. Incoming Pos Ref ID: %@",
-                       incomingPosRefId);
-                return;
-            }
+            SPILog(@"Received Auth Code Required but I was not waiting for one. Incoming Pos Ref ID: %@",
+                   incomingPosRefId);
+            return;
+        }
         SPIPhoneForAuthRequired *phoneForAuthRequired =
         [[SPIPhoneForAuthRequired alloc] initWithMessage:m];
         NSString *msg =
@@ -1133,9 +1136,9 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         if (weakSelf.state.flow != SPIFlowTransaction ||
             weakSelf.state.txFlowState.isFinished ||
             ![weakSelf.state.txFlowState.posRefId isEqualToString:incomingPosRefId]) {
-                SPILog(@"Received Cashout Response but I was not waiting for one. Incoming Pos Ref ID:  %@", incomingPosRefId);
-                return;
-            }
+            SPILog(@"Received Cashout Response but I was not waiting for one. Incoming Pos Ref ID:  %@", incomingPosRefId);
+            return;
+        }
         // TH-1A, TH-2A
         [weakSelf.state.txFlowState completed:[m successState]
                                      response:m
@@ -1155,7 +1158,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             weakSelf.state.txFlowState.isFinished ||
             ![weakSelf.state.txFlowState.posRefId
               isEqualToString:incomingPosRefId]) {
-                SPILog(@"Received Cashout Response but I was not waiting for one. "
+                SPILog(
+                       @"Received Cashout Response but I was not waiting for one. "
                        @"Incoming Pos Ref ID: %@",
                        incomingPosRefId);
                 return;
@@ -1178,7 +1182,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     
     if (self.state.flow != SPIFlowTransaction ||
         self.state.txFlowState.isFinished) {
-        NSString *msg = [NSString stringWithFormat: @"Received purchase response but I was not waiting for one. %@", m.decryptedJson];
+        NSString *msg = [NSString stringWithFormat:@"Received purchase response but I was not waiting for one. %@", m.decryptedJson];
         
         // FIX ME: State does not go back
         //[self.state.txFlowState failed:m msg:msg];
@@ -1291,19 +1295,21 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             if ([gltResponse isStillInProgress:txState.posRefId]) {
                 // TH-4E - Operation In Progress
                 if ([gltResponse isWaitingForSignatureResponse] && !txState.isAwaitingSignatureCheck) {
-                    SPILog(@"Eftpos is waiting for us to send it signature "
+                    SPILog(
+                           @"Eftpos is waiting for us to send it signature "
                            @"accept/decline, but we were not aware of this. The "
                            @"user can only really decline at this stage as there "
                            @"is no receipt to print for signing.");
                     
-                    [weakSelf.state.txFlowState signatureRequired: [[SPISignatureRequired alloc]
-                                                                    initWithPosRefId:txState.posRefId
-                                                                    requestId:m.mid
-                                                                    receiptToSign:@"MISSING RECEIPT\n DECLINE AND TRY AGAIN."]
-                                                                    msg:@"Recovered in Signature Required but we don't have receipt. You may Decline then Retry."];
+                    [weakSelf.state.txFlowState signatureRequired:[[SPISignatureRequired alloc]
+                                                                   initWithPosRefId:txState.posRefId
+                                                                   requestId:m.mid
+                                                                   receiptToSign:@"MISSING RECEIPT\n DECLINE AND TRY AGAIN."]
+                                                              msg:@"Recovered in Signature Required but we don't have receipt. You may Decline then Retry."];
                 } else if ([gltResponse isWaitingForAuthCode] &&
                            !txState.isAwaitingPhoneForAuth) {
-                    SPILog(@"Eftpos is waiting for us to send it auth code, but "
+                    SPILog(
+                           @"Eftpos is waiting for us to send it auth code, but "
                            @"we were not aware of this. We can only cancel the "
                            @"transaction at this stage as we don't have enough "
                            @"information to recover from this.");
@@ -1399,7 +1405,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                 [now compare:cancel] == NSOrderedDescending) {
                 // TH-2T - too long since cancel attempt - Consider unknown
                 SPILog(@"Been too long waiting for transaction to cancel.");
-                [txState unknownCompleted:@"Waited long enough for cancel "
+                [txState unknownCompleted:
+                 @"Waited long enough for cancel "
                  @"transaction result. Check EFTPOS. "];
                 needsPublishing = YES;
                 
@@ -1605,7 +1612,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             }
         } else {
             [weakSelf.spiPat PushPayAtTableConfig];
-            NSLog(@"onReadyToTransact, we were NOT in the middle of a "
+            NSLog(
+                  @"onReadyToTransact, we were NOT in the middle of a "
                   @"transaction. nothing to do.");
         }
     });
@@ -1652,7 +1660,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             SPILog(@"First pong of connection and in paired state.");
             [self onReadyToTransact];
         } else {
-            SPILog(@"First pong of connection but pairing process not "
+            SPILog(
+                   @"First pong of connection but pairing process not "
                    @"finalised yet.");
         }
     }
@@ -1669,7 +1678,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     dispatch_async(self.queue, ^{
         if (weakSelf.state.flow != SPIFlowTransaction ||
             weakSelf.state.txFlowState.isFinished) {
-            SPILog(@"Received Settlement Enquiry response but I was not waiting "
+            SPILog(
+                   @"Received Settlement Enquiry response but I was not waiting "
                    @"for one. %@",
                    [m decryptedJson]);
             return;
@@ -1802,7 +1812,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         } else if ([eventName isEqualToString:SPIPayAtTableBillPaymentKey]) {
             [weakSelf.spiPat handleBillPaymentAdvice:m];
         } else if ([eventName isEqualToString:SPIInvalidHmacSignature]) {
-            SPILog(@"I could not verify message from EFTPOS. You might have to "
+            SPILog(
+                   @"I could not verify message from EFTPOS. You might have to "
                    @"un-pair EFTPOS and then reconnect.");
             
         } else if ([eventName isEqualToString:SPIEventError]) {
@@ -1810,7 +1821,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             [weakSelf handleErrorEvent:m];
             
         } else {
-            SPILog(@"I don't understand event:'%@', %@. Perhaps I have not "
+            SPILog(
+                   @"I don't understand event:'%@', %@. Perhaps I have not "
                    @"implemented it yet.",
                    m.eventName, m.data);
         }
